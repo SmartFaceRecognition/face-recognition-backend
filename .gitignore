@@ -1,5 +1,5 @@
 ### S3정보 ###
-application.properties
+application.yml
 
 HELP.md
 .gradle
