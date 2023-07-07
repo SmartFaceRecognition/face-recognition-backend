@@ -31,14 +31,11 @@ public class S3Service {
             case "jpeg":
                 contentType = "image/jpeg";
                 break;
+            case "jpg":
+                contentType = "image/jpg";
+                break;
             case "png":
                 contentType = "image/png";
-                break;
-            case "txt":
-                contentType = "text/plain";
-                break;
-            case "csv":
-                contentType = "text/csv";
                 break;
         }
 
