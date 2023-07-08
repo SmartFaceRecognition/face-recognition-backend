@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-public class FileDto {
+public class faceDto {
     private String title;
     private String url;
     private MultipartFile file;

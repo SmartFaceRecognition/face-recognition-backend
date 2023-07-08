@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.service;
 
-import com.Han2m.portLogistics.dto.FileDto;
+import com.Han2m.portLogistics.dto.faceDto;
 import com.Han2m.portLogistics.entity.FileEntity;
 import com.Han2m.portLogistics.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,8 @@ import java.util.List;
 public class FileService {
     private final FileRepository fileRepository;
 
-    public void save(FileDto fileDto) {
-        FileEntity fileEntity = new FileEntity(fileDto.getTitle(), fileDto.getUrl());
+    public void save(faceDto faceDto) {
+        FileEntity fileEntity = new FileEntity(faceDto.getTitle(), faceDto.getUrl());
         fileRepository.save(fileEntity);
     }
 
