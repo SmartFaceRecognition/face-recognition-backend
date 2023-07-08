@@ -1,4 +1,4 @@
-package com.Han2m.portLogistics.service;
+package com.Han2m.portLogistics.user.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;

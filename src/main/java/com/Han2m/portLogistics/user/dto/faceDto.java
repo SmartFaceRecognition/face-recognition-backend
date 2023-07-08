@@ -1,4 +1,4 @@
-package com.Han2m.portLogistics.dto;
+package com.Han2m.portLogistics.user.dto;
 
 import lombok.Getter;
 import lombok.Setter;

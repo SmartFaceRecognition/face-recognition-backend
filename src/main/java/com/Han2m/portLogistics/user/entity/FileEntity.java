@@ -1,4 +1,4 @@
-package com.Han2m.portLogistics.entity;
+package com.Han2m.portLogistics.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
