@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.user.controller;
 
-import com.Han2m.portLogistics.user.dto.faceDto;
+import com.Han2m.portLogistics.user.dto.FaceDto;
 import com.Han2m.portLogistics.user.entity.FileEntity;
 import com.Han2m.portLogistics.user.service.FileService;
 import com.Han2m.portLogistics.user.service.S3Service;
@@ -31,7 +31,7 @@ public class S3Controller {
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         String url = s3Service.uploadFile(file);
 
-        faceDto faceDto = new faceDto();
+        FaceDto faceDto = new FaceDto();
         faceDto.setUrl(url);
         fileService.save(faceDto);
 
