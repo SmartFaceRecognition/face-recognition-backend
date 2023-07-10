@@ -4,23 +4,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.Id;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class ControlEntity {
+public class User_Wharf_Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "controlID")
+    @Column(name = "userWharfID")
     private Long id;
-    private String openTime;
-    private String closeTime;
 
-    public ControlEntity(Long id, String openTime, String closeTime) {
-        this.id = id;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
+    public User_Wharf_Entity(PersonEntity personEntity, WharfEntity wharfEntity) {
+        this.personEntity = personEntity;
+        this.wharfEntity = wharfEntity;
     }
 
     @ManyToOne
@@ -30,4 +28,6 @@ public class ControlEntity {
     @ManyToOne
     @JoinColumn(name = "wharfID")
     private WharfEntity wharfEntity;
+
+
 }

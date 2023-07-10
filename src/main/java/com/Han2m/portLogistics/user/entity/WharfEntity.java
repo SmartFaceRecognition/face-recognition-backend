@@ -3,6 +3,8 @@ package com.Han2m.portLogistics.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -12,23 +14,19 @@ public class WharfEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wharfID")
-
     private Long id;
+    public String place;
 
-    // Test용 부두 3개
-    public String place1;
-    public String place2;
-    public String place3;
-
-    public WharfEntity(Long id, String place1, String place2, String place3) {
+    public WharfEntity(Long id, String place) {
         this.id = id;
-        this.place1 = place1;
-        this.place2 = place2;
-        this.place3 = place3;
+        this.place = place;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "userID") // 체크하기
-    public PersonEntity personEntity;
+    @OneToMany(mappedBy = "wharfEntity")
+    private List<ControlEntity> controlEntityList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "wharfEntity")
+    private List<User_Wharf_Entity> userWharfEntityList = new ArrayList<>();
+
     
 }

@@ -42,15 +42,13 @@ public class PersonEntity {
         this.fingerprint = fingerprint;
     }
 
-    // status <- user -> control
     // mapped by는 저쪽이 주인이라는 걸 가리킴
-    @OneToMany(mappedBy = "personEntity") // 반대쪽을 써야하는지 체크
-    public List<ControlEntity> controlEntityList = new ArrayList<>();
     @OneToMany(mappedBy = "personEntity")
-    public List<StatusEntity> statusEntityList = new ArrayList<>();
+    private List<StatusEntity> statusEntityList = new ArrayList<>();
 
-//    @OneToMany // 다대일 양방향으로 해야 ?? check
-//    @JoinColumn(name = "userID", insertable = false, updatable = false) // public 여부도 체크
-//    public List<WharfEntity> wharfEntityList = new ArrayList<>();
+    @OneToMany(mappedBy = "personEntity")
+    private List<ControlEntity> controlEntityList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "personEntity")
+    private List<User_Wharf_Entity> userWharfEntityList = new ArrayList<>();
 }

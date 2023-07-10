@@ -27,6 +27,6 @@ public class StatusEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "userID") // 체크하기
-    public PersonEntity personEntity;
+    @JoinColumn(name = "userID")
+    private PersonEntity personEntity;
 }

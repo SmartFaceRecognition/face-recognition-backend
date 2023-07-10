@@ -13,9 +13,9 @@ public class PersonController {
     private final PersonService personService;
 
     @GetMapping("/person/{id}")
-    public ResponseEntity<PersonDto> getPerson(@PathVariable Long id) {
-        PersonDto person = personService.getPersonById(id);
-        return ResponseEntity.ok(person);
+    public ResponseEntity<PersonDto> getPersonById(@PathVariable Long id) {
+        PersonDto personDto = personService.getPersonById(id);
+        return ResponseEntity.ok(personDto);
     }
 
     @PostMapping("/person/register")
