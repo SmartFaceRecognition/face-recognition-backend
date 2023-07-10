@@ -44,7 +44,7 @@ public class PersonEntity {
 
     // status <- user -> control
     // mapped by는 저쪽이 주인이라는 걸 가리킴
-    @OneToMany(mappedBy = "personEntity")
+    @OneToMany(mappedBy = "personEntity") // 반대쪽을 써야하는지 체크
     public List<ControlEntity> controlEntityList = new ArrayList<>();
     @OneToMany(mappedBy = "personEntity")
     public List<StatusEntity> statusEntityList = new ArrayList<>();

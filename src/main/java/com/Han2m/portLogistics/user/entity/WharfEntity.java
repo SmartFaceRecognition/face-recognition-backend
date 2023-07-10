@@ -12,12 +12,19 @@ public class WharfEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wharfID")
-    private Long id;
-    public String place;
 
-    public WharfEntity(Long id, String place) {
+    private Long id;
+
+    // Test용 부두 3개
+    public String place1;
+    public String place2;
+    public String place3;
+
+    public WharfEntity(Long id, String place1, String place2, String place3) {
         this.id = id;
-        this.place = place;
+        this.place1 = place1;
+        this.place2 = place2;
+        this.place3 = place3;
     }
 
     @ManyToOne
