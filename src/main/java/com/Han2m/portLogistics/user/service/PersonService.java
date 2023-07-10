@@ -29,8 +29,7 @@ public class PersonService {
     }
     
     @Autowired
-    private WharfRepository wharfRepository; // 잘 안되면 여기 체크
-
+    private WharfRepository wharfRepository;
 
 
     // 직원 조회
@@ -40,7 +39,6 @@ public class PersonService {
             PersonEntity personEntity = optionalPersonEntity.get();
             PersonDto personDto = convertToPersonDTO(personEntity);
 
-            // 모든 부두 정보를 설정합니다.
             List<User_Wharf_Entity> userWharfEntities = personEntity.getUserWharfEntityList();
             List<String> wharfs = userWharfEntities.stream()
                     .map(User_Wharf_Entity::getWharfEntity)

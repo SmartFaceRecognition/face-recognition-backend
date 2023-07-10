@@ -21,13 +21,13 @@ public class S3Controller {
     private final S3Service s3Service;
     private final FileService fileService;
 
-    @GetMapping("/api/files")
+    @GetMapping("/files")
     public ResponseEntity<List<FileEntity>> getAllFiles() {
         List<FileEntity> fileList = fileService.getFiles();
         return ResponseEntity.ok(fileList);
     }
 
-    @PostMapping("/api/files")
+    @PostMapping("/files")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         String url = s3Service.uploadFile(file);
 
