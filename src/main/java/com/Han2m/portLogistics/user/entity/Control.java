@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ControlEntity {
+public class Control {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "controlID")
@@ -17,17 +17,17 @@ public class ControlEntity {
     private String openTime;
     private String closeTime;
 
-    public ControlEntity(Long id, String openTime, String closeTime) {
+    public Control(Long id, String openTime, String closeTime) {
         this.id = id;
         this.openTime = openTime;
         this.closeTime = closeTime;
     }
 
     @ManyToOne
-    @JoinColumn(name = "userID")
-    private PersonEntity personEntity;
+    @JoinColumn(name = "personID")
+    private Person person;
 
     @ManyToOne
     @JoinColumn(name = "wharfID")
-    private WharfEntity wharfEntity;
+    private Wharf wharf;
 }

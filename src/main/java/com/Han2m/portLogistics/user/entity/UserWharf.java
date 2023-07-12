@@ -10,24 +10,22 @@ import jakarta.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User_Wharf_Entity {
+public class UserWharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userWharfID")
     private Long id;
 
-    public User_Wharf_Entity(PersonEntity personEntity, WharfEntity wharfEntity) {
-        this.personEntity = personEntity;
-        this.wharfEntity = wharfEntity;
+    public UserWharf(Person person, Wharf wharf) {
+        this.person = person;
+        this.wharf = wharf;
     }
 
     @ManyToOne
-    @JoinColumn(name = "userID")
-    private PersonEntity personEntity;
+    @JoinColumn(name = "personID")
+    private Person person;
 
     @ManyToOne
     @JoinColumn(name = "wharfID")
-    private WharfEntity wharfEntity;
-
-
+    private Wharf wharf;
 }

@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.user.controller;
 
 import com.Han2m.portLogistics.user.dto.FaceDto;
-import com.Han2m.portLogistics.user.entity.FileEntity;
+import com.Han2m.portLogistics.user.entity.File;
 import com.Han2m.portLogistics.user.service.FileService;
 import com.Han2m.portLogistics.user.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ public class S3Controller {
     private final FileService fileService;
 
     @GetMapping("/files")
-    public ResponseEntity<List<FileEntity>> getAllFiles() {
-        List<FileEntity> fileList = fileService.getFiles();
+    public ResponseEntity<List<File>> getAllFiles() {
+        List<File> fileList = fileService.getFiles();
         return ResponseEntity.ok(fileList);
     }
 

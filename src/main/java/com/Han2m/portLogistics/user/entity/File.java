@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class FileEntity {
+public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,7 @@ public class FileEntity {
     @Column
     private String s3Url;
 
-    public FileEntity(String title, String s3Url) {
+    public File(String title, String s3Url) {
         this.title = title;
         this.s3Url = s3Url;
     }

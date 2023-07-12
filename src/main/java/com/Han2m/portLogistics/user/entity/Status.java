@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StatusEntity {
+public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusID")
@@ -19,7 +19,7 @@ public class StatusEntity {
     private String outTime;
 
     // entity에는 반드시 public 또는 protected로 된 생성자가 있어야 한다.
-    public StatusEntity(Long id, String wharf, String enterTime, String outTime) {
+    public Status(Long id, String wharf, String enterTime, String outTime) {
         this.id = id;
         this.wharf = wharf;
         this.enterTime = enterTime;
@@ -27,6 +27,6 @@ public class StatusEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "userID")
-    private PersonEntity personEntity;
+    @JoinColumn(name = "personID")
+    private Person person;
 }

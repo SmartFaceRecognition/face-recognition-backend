@@ -1,9 +1,9 @@
 package com.Han2m.portLogistics.user.repository;
 
-import com.Han2m.portLogistics.user.entity.PersonEntity;
+import com.Han2m.portLogistics.user.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
+public interface PersonRepository extends JpaRepository<Person, Long> {
 }

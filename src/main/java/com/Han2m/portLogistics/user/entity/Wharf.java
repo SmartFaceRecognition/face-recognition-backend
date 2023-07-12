@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class WharfEntity {
+public class Wharf {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,16 +20,16 @@ public class WharfEntity {
     private Long id;
     public String place;
 
-    public WharfEntity(Long id, String place) {
+    public Wharf(Long id, String place) {
         this.id = id;
         this.place = place;
     }
 
-    @OneToMany(mappedBy = "wharfEntity")
-    private List<ControlEntity> controlEntityList = new ArrayList<>();
+    @OneToMany(mappedBy = "wharf")
+    private List<Control> controlList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "wharfEntity")
-    private List<User_Wharf_Entity> userWharfEntityList = new ArrayList<>();
+    @OneToMany(mappedBy = "wharf")
+    private List<UserWharf> userWharfList = new ArrayList<>();
 
     
 }
