@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -58,16 +59,19 @@ public class PersonService {
         PersonEntity savedPersonEntity = personRepository.save(personEntity);
 
         if (personDto.getWharfs() != null) {
-            WharfEntity wharfEntity = wharfRepository.findById(personDto.getId())
-                    .orElseThrow(() -> new NotFoundException("부두를 찾을 수 없습니다."));
-            User_Wharf_Entity userWharfEntity = new User_Wharf_Entity(savedPersonEntity, wharfEntity);
-            savedPersonEntity.getUserWharfEntityList().add(userWharfEntity);
-        }
+            List<String> wharfs = personDto.getWharfs();
+            for (String wharf : wharfs) {
+                List<WharfEntity> wharfEntities = wharfRepository.findByPlace(wharf);
+                if (!wharfEntities.isEmpty()) {
+                    WharfEntity wharfEntity = wharfEntities.get(0);
 
+                    User_Wharf_Entity userWharfEntity = new User_Wharf_Entity(savedPersonEntity, wharfEntity);
+                    savedPersonEntity.getUserWharfEntityList().add(userWharfEntity);
+                }
+            }
+        }
         return convertToPersonDTO(savedPersonEntity);
     }
-
-
 
 
     // 직원 정보 수정하기

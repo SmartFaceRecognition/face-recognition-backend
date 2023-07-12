@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class PersonController {
@@ -18,6 +20,16 @@ public class PersonController {
         return ResponseEntity.ok(personDto);
     }
 
+    // 오류
+    // {
+    //    "nationality":"한국",
+    //    "name":"전광휘",
+    //    "birth":"19991105",
+    //    "phone":"01058446289",
+    //    "position":"leader",
+    //    "faceUrl":"https://port-entrance.s3.ap-northeast-2.amazonaws.com/Envv.png",
+    //    "wharfs": ["제 1부두", "제 2부두"]
+    //}
     @PostMapping("/person/register")
     public ResponseEntity<PersonDto> registerPerson(@RequestBody PersonDto personDTO) {
         PersonDto registeredPerson = personService.registerPerson(personDTO);
