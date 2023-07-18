@@ -10,6 +10,8 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -110,6 +112,28 @@ public class PersonService {
         personRepository.deleteById(id);
     }
 
+
+    // 페이징
+    public Page<PersonDto> getAllPersons(Pageable pageable) {
+        Page<Person> persons = personRepository.findAll(pageable);
+        return persons.map(this::convertToPersonDTO);
+    }
+
+    
+    // 등록순으로 정렬하기
+    public Page<PersonDto> getAllPersonsOrderByRegistrationDate(Pageable pageable) {
+        Page<Person> persons = personRepository.findAll(pageable);
+        return persons.map(this::convertToPersonDTO);
+    }
+
+
+    // 이름으로 검색
+    public List<PersonDto> searchPersonsByName(String name) {
+        List<Person> persons = personRepository.findByName(name);
+        return persons.stream()
+                .map(this::convertToPersonDTO)
+                .collect(Collectors.toList());
+    }
 
     private Person convertToPersonEntity(PersonDto personDto) {
         Person person = new Person();
