@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.user.controller;
 
-import com.Han2m.portLogistics.user.dto.faceDto;
-import com.Han2m.portLogistics.user.entity.FileEntity;
+import com.Han2m.portLogistics.user.dto.FaceDto;
+import com.Han2m.portLogistics.user.entity.File;
 import com.Han2m.portLogistics.user.service.FileService;
 import com.Han2m.portLogistics.user.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +21,17 @@ public class S3Controller {
     private final S3Service s3Service;
     private final FileService fileService;
 
-    @GetMapping("/api/files")
-    public ResponseEntity<List<FileEntity>> getAllFiles() {
-        List<FileEntity> fileList = fileService.getFiles();
+    @GetMapping("/files")
+    public ResponseEntity<List<File>> getAllFiles() {
+        List<File> fileList = fileService.getFiles();
         return ResponseEntity.ok(fileList);
     }
 
-    @PostMapping("/api/files")
+    @PostMapping("/files")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         String url = s3Service.uploadFile(file);
 
-        faceDto faceDto = new faceDto();
+        FaceDto faceDto = new FaceDto();
         faceDto.setUrl(url);
         fileService.save(faceDto);
 
