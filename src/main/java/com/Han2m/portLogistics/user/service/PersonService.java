@@ -120,7 +120,7 @@ public class PersonService {
     }
 
     
-    // 등록순으로 정렬하기
+    // 등록순(id 오름차순)으로 정렬하기
     public Page<PersonDto> getAllPersonsOrderByRegistrationDate(Pageable pageable) {
         Page<Person> persons = personRepository.findAll(pageable);
         return persons.map(this::convertToPersonDTO);

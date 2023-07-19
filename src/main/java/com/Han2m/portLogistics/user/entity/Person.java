@@ -49,6 +49,6 @@ public class Person {
     @OneToMany(mappedBy = "person")
     private List<Control> controlList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 여기가 핵심이었음. 아마 cascade때문에 안된듯
     private List<UserWharf> userWharfList = new ArrayList<>();
 }
