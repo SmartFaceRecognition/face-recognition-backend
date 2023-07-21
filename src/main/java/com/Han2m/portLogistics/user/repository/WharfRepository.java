@@ -13,7 +13,9 @@ import java.util.List;
 public interface WharfRepository extends JpaRepository<Wharf, Long> {
 
     List<Wharf> findByUserWharfListPersonId(Long personId);
+    List<Wharf> findByGuestName(String guestName);
+
     List<Wharf> findByPlace(String place);
-    boolean existsByPlace(String place); // 중복체크 여부는 나중에 사라질수도 있나 ?
+    boolean existsByPlace(String place); // 중복체크 여부는 나중에 사라질수도 있나 ? // 자꾸 부두가 중복으로 처리돼서 넣어놓음
 
 }

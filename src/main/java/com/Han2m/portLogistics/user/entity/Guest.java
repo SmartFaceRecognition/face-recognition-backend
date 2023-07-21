@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Guest {
 
+    // 07.21. 차별점을 두려면 상시 출입인원을 추가 ?? guest는 견학 or 점검 느낌이고 자주 드나드는 사람은 상시출입증을 발급하도록 (차량번호 등 추가?)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guestID")

@@ -76,8 +76,6 @@ public class PersonService {
     }
 
 
-
-
     // 직원 정보 수정하기
     public PersonDto editPersonInfo(Long id, PersonDto updatedPersonDTO) {
         Person person = personRepository.findById(id)

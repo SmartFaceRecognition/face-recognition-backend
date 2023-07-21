@@ -4,29 +4,47 @@ import com.Han2m.portLogistics.user.dto.GuestDto;
 import com.Han2m.portLogistics.user.dto.PersonDto;
 import com.Han2m.portLogistics.user.entity.Guest;
 import com.Han2m.portLogistics.user.entity.Person;
+import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.repository.GuestRepository;
+import com.Han2m.portLogistics.user.repository.WharfRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class GuestService {
 
     private final GuestRepository guestRepository;
+    private final WharfRepository wharfRepository;
 
     @Autowired
-    public GuestService(GuestRepository guestRepository) {
+    public GuestService(GuestRepository guestRepository,
+                        WharfRepository wharfRepository) {
         this.guestRepository = guestRepository;
+        this.wharfRepository = wharfRepository;
     }
 
     // 손님 정보 조회
-    public GuestDto getGuestById(Long id) {
-        Guest guest = guestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("외부인을 찾을 수 없습니다. ID: " + id));
-        return convertToGuestDto(guest);
+    public GuestDto getPersonById(Long id) {
+        Optional<Guest> optionalPerson = guestRepository.findById(id);
+        if (optionalPerson.isPresent()) {
+            Guest guest = optionalPerson.get();
+            GuestDto guestDto = convertToGuestDto(guest);
+
+            List<Wharf> wharfList = wharfRepository.findByGuestName(guest.getName());
+            List<String> wharfs = wharfList.stream()
+                    .map(Wharf::getPlace)
+                    .collect(Collectors.toList());
+            guestDto.setWharfs(wharfs);
+
+            return guestDto;
+        } else {
+            throw new EntityNotFoundException("해당 손님을 찾을 수 없습니다. ID : " + id);
+        }
     }
 
     // 손님 등록
@@ -39,7 +57,7 @@ public class GuestService {
     // 손님 정보 수정
     public GuestDto editGuestInfo(Long id, GuestDto updatedGuestDto) {
         Guest guest = guestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("외부인을 찾을 수 없습니다. ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("해당 손님을 찾을 수 없습니다. ID: " + id));
         guest.setName(updatedGuestDto.getName());
         guest.setBirth(updatedGuestDto.getBirth());
         guest.setPhone(updatedGuestDto.getPhone());
