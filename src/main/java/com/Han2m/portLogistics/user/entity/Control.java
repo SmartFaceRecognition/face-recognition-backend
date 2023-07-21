@@ -27,6 +27,11 @@ public class Control {
     @JoinColumn(name = "personID")
     private Person person;
 
+
+    @ManyToOne
+    @JoinColumn(name = "guestID")
+    private Guest guest;
+
     @ManyToOne
     @JoinColumn(name = "wharfID")
     private Wharf wharf;

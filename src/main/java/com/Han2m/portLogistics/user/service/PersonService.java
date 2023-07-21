@@ -128,7 +128,7 @@ public class PersonService {
 
 
     // 이름으로 검색
-    public List<PersonDto> searchPersonsByName(String name) {
+    public List<PersonDto> searchPersonByName(String name) {
         List<Person> persons = personRepository.findByName(name);
         return persons.stream()
                 .map(this::convertToPersonDTO)

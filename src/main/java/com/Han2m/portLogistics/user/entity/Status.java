@@ -29,4 +29,8 @@ public class Status {
     @ManyToOne
     @JoinColumn(name = "personID")
     private Person person;
+
+    @ManyToOne
+    @JoinColumn(name = "guestID")
+    private Guest guest;
 }

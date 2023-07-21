@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,7 +43,6 @@ public class PersonController {
     }
 
 
-
     // 모든 사람 정보 조회 (페이징)
     @GetMapping("/person/access-history")
     public ResponseEntity<Page<PersonDto>> getAllPersons(
@@ -55,9 +53,6 @@ public class PersonController {
         Page<PersonDto> persons = personService.getAllPersons(pageable);
         return ResponseEntity.ok(persons);
     }
-
-    // 직원, 손님만 따로 조회하는 기능도 추가해야
-    // ㄴ 이거는 직원과 손님을 구분한 뒤에 ㄱㄱ
 
     // 등록순으로 모든 사람 정보 조회 (페이징)
     @GetMapping("/person/orderByRegis")
@@ -76,7 +71,7 @@ public class PersonController {
     public ResponseEntity<List<PersonDto>> searchPersonsByName(
             @RequestParam String name
     ) {
-        List<PersonDto> persons = personService.searchPersonsByName(name);
+        List<PersonDto> persons = personService.searchPersonByName(name);
         return ResponseEntity.ok(persons);
     }
 }

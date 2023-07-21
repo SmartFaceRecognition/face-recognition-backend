@@ -26,6 +26,10 @@ public class UserWharf {
     private Person person;
 
     @ManyToOne
+    @JoinColumn(name = "guestID")
+    private Guest guest;
+
+    @ManyToOne
     @JoinColumn(name = "wharfID")
     private Wharf wharf;
 }
