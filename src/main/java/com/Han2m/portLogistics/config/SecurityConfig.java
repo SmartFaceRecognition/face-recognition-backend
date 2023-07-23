@@ -28,10 +28,10 @@ public class SecurityConfig{
         http
                 //url 권한 설정
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/*").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(withDefaults());
+                        .anyRequest().permitAll()
+                );
+
+        http.formLogin(AbstractHttpConfigurer::disable);
 
         //세션 로그인 사용 안함
         http.sessionManagement((httpSecuritySessionManagementConfigurer ->

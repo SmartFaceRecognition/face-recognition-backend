@@ -4,26 +4,25 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.Id;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserWharf {
+public class GuestWharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userWharfID")
+    @Column(name = "guestWharfID")
     private Long id;
 
-    public UserWharf(Person person, Wharf wharf) {
-        this.person = person;
+    public GuestWharf(Guest guest, Wharf wharf) {
+        this.guest = guest;
         this.wharf = wharf;
     }
 
     @ManyToOne
-    @JoinColumn(name = "personID")
-    private Person person;
+    @JoinColumn(name = "guestID")
+    private Guest guest;
 
     @ManyToOne
     @JoinColumn(name = "wharfID")

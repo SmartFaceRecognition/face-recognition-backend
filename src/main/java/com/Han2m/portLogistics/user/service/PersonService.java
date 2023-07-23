@@ -10,9 +10,11 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +26,13 @@ import java.util.stream.Collectors;
 public class PersonService {
 
     private final PersonRepository personRepository;
-
-    public PersonService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
-    }
+    private final WharfRepository wharfRepository;
 
     @Autowired
-    private WharfRepository wharfRepository;
+    public PersonService(PersonRepository personRepository, @Qualifier("wharfRepository") WharfRepository wharfRepository) {
+        this.personRepository = personRepository;
+        this.wharfRepository = wharfRepository;
+    }
 
 
     // 직원 조회
@@ -54,6 +56,7 @@ public class PersonService {
 
 
     // 직원 등록
+    @Transactional
     public PersonDto registerPerson(PersonDto personDto) {
         Person person = convertToPersonEntity(personDto);
         Person savedPerson = personRepository.save(person);

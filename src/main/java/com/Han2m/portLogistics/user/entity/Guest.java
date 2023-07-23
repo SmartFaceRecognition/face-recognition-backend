@@ -45,5 +45,5 @@ public class Guest {
     private List<Control> controlList = new ArrayList<>();
 
     @OneToMany(mappedBy = "guest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserWharf> userWharfList = new ArrayList<>();
+    private List<GuestWharf> GuestWharfList = new ArrayList<>();
 }

@@ -31,5 +31,7 @@ public class Wharf {
     @OneToMany(mappedBy = "wharf")
     private List<UserWharf> userWharfList = new ArrayList<>();
 
-    
+    @OneToMany(mappedBy = "wharf")
+    private List<GuestWharf> guestWharfList = new ArrayList<>();
+
 }

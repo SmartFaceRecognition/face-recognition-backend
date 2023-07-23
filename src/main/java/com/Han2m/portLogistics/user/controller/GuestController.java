@@ -1,10 +1,8 @@
 package com.Han2m.portLogistics.user.controller;
 
 import com.Han2m.portLogistics.user.dto.GuestDto;
-import com.Han2m.portLogistics.user.dto.PersonDto;
 import com.Han2m.portLogistics.user.service.GuestService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
