@@ -29,7 +29,7 @@ public class Wharf {
     private List<Control> controlList = new ArrayList<>();
 
     @OneToMany(mappedBy = "wharf")
-    private List<UserWharf> userWharfList = new ArrayList<>();
+    private List<PersonWharf> personWharfList = new ArrayList<>();
 
     @OneToMany(mappedBy = "wharf")
     private List<GuestWharf> guestWharfList = new ArrayList<>();

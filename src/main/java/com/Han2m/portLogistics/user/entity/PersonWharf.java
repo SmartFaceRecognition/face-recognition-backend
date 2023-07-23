@@ -10,13 +10,13 @@ import jakarta.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserWharf {
+public class PersonWharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userWharfID")
     private Long id;
 
-    public UserWharf(Person person, Wharf wharf) {
+    public PersonWharf(Person person, Wharf wharf) {
         this.person = person;
         this.wharf = wharf;
     }

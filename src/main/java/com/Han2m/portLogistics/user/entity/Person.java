@@ -22,33 +22,37 @@ public class Person {
     private Long id;
     private String nationality;
     private String name;
-    private String sex;
+    private boolean isWorker;
+    private boolean sex;
     private String birth;
     private String phone;
-    private String position;
-    private String faceUrl;
-    private String fingerprint;
 
-
-    public Person(Long id, String nationality, String name, String sex, String birth, String phoneNumber, String position, String faceUrl, String fingerprint) {
+    public Person(Long id, String nationality, String name, boolean isWorker, boolean sex, String birth, String phone) {
         this.id = id;
         this.nationality = nationality;
         this.name = name;
+        this.isWorker = isWorker;
         this.sex = sex;
         this.birth = birth;
-        this.phone = phoneNumber;
-        this.position = position;
-        this.faceUrl = faceUrl;
-        this.fingerprint = fingerprint;
+        this.phone = phone;
     }
 
-    // mapped by는 저쪽이 주인이라는 걸 가리킴
+
     @OneToMany(mappedBy = "person")
     private List<Status> statusList = new ArrayList<>();
 
     @OneToMany(mappedBy = "person")
     private List<Control> controlList = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "person")
+    private List<Guest> guestList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 여기가 핵심이었음. 아마 cascade때문에 안된듯
-    private List<UserWharf> userWharfList = new ArrayList<>();
+    @OneToMany(mappedBy = "person")
+    private List<Worker> workerList = new ArrayList<>();
+
+    
+    // 여기 상속관계를 추가해야될 수도 있음
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<PersonWharf> personWharfList = new ArrayList<>();
+    
 }

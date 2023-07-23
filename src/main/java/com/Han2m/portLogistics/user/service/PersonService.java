@@ -2,7 +2,7 @@ package com.Han2m.portLogistics.user.service;
 
 import com.Han2m.portLogistics.user.dto.PersonDto;
 import com.Han2m.portLogistics.user.entity.Person;
-import com.Han2m.portLogistics.user.entity.UserWharf;
+import com.Han2m.portLogistics.user.entity.PersonWharf;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
@@ -69,9 +69,9 @@ public class PersonService {
                     newWharf.setPlace(wharf);
                     wharfRepository.save(newWharf);
 
-                    UserWharf userWharfEntity = new UserWharf(savedPerson, newWharf);
-                    savedPerson.getUserWharfList().add(userWharfEntity);
-                    newWharf.getUserWharfList().add(userWharfEntity);
+                    PersonWharf personWharfEntity = new PersonWharf(savedPerson, newWharf);
+                    savedPerson.getPersonWharfList().add(personWharfEntity);
+                    newWharf.getPersonWharfList().add(personWharfEntity);
                 }
             }
         }
@@ -90,19 +90,19 @@ public class PersonService {
         person.setPosition(updatedPersonDTO.getPosition());
         person.setFaceUrl(updatedPersonDTO.getFaceUrl());
 
-        List<UserWharf> updatedUserWharfs = new ArrayList<>();
+        List<PersonWharf> updatedPersonWharves = new ArrayList<>();
         List<String> updatedWharfPlaces = updatedPersonDTO.getWharfs();
         if (updatedWharfPlaces != null) {
             for (String place : updatedWharfPlaces) {
                 List<Wharf> wharfEntities = wharfRepository.findByPlace(place);
                 if (!wharfEntities.isEmpty()) {
                     Wharf wharfEntity = wharfEntities.get(0);
-                    UserWharf userWharf = new UserWharf(person, wharfEntity);
-                    updatedUserWharfs.add(userWharf);
+                    PersonWharf personWharf = new PersonWharf(person, wharfEntity);
+                    updatedPersonWharves.add(personWharf);
                 }
             }
         }
-        person.setUserWharfList(updatedUserWharfs);
+        person.setPersonWharfList(updatedPersonWharves);
 
         Person updatedPerson = personRepository.save(person);
         return convertToPersonDTO(updatedPerson);
@@ -146,7 +146,7 @@ public class PersonService {
         person.setFaceUrl(personDto.getFaceUrl());
 
         // 부두 관련
-        List<UserWharf> userWharfs = new ArrayList<>();
+        List<PersonWharf> personWharves = new ArrayList<>();
         List<String> wharfPlaces = personDto.getWharfs();
         if (wharfPlaces != null) {
             for (String place : wharfPlaces) {
@@ -154,12 +154,12 @@ public class PersonService {
                 if (!wharfEntities.isEmpty()) {
                     Wharf wharfEntity = wharfEntities.get(0);
 
-                    UserWharf userWharf = new UserWharf(person, wharfEntity);
-                    userWharfs.add(userWharf);
+                    PersonWharf personWharf = new PersonWharf(person, wharfEntity);
+                    personWharves.add(personWharf);
                 }
             }
         }
-        person.setUserWharfList(userWharfs);
+        person.setPersonWharfList(personWharves);
         return person;
     }
 
@@ -173,8 +173,8 @@ public class PersonService {
         personDto.setPosition(person.getPosition());
         personDto.setFaceUrl(person.getFaceUrl());
 
-        List<String> wharfPlaces = person.getUserWharfList().stream()
-                .map(UserWharf::getWharf)
+        List<String> wharfPlaces = person.getPersonWharfList().stream()
+                .map(PersonWharf::getWharf)
                 .map(Wharf::getPlace)
                 .collect(Collectors.toList());
         personDto.setWharfs(wharfPlaces);
