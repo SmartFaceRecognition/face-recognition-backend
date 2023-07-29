@@ -14,18 +14,14 @@ import java.util.List;
 @Repository
 public interface WharfRepository extends JpaRepository<Wharf, Long> {
 
-    // 직원 id로 찾는거
-    List<Wharf> findByUserWharfListPersonId(Long personId);
+    // personWharfList의 Person ID를 이용하여 Wharf 찾기
+    List<Wharf> findByPersonWharfListPersonId(Long personId);
 
-    // 손님 id로 찾는거
-    List<Wharf> findByGuestWharfListGuestId(Long guestId);
+    // 부두 명을 기반으로 해당 부두에있는 모든사람 찾기
+    @Query("SELECT pw.person FROM PersonWharf pw WHERE pw.wharf.place = :place")
+    List<Person> findCurrentPersonByWharf(@Param("place") String place);
 
-    List<Wharf> findByPlace(String place);
-
-    List<Person> findCurrentPersonByWharf(String wharf);
-    List<Guest> findCurrentGuestByWharf(String wharf);
-
-
-    boolean existsByPlace(String place); // 중복체크 여부는 나중에 사라질수도 있나 ? // 자꾸 부두가 중복으로 처리돼서 넣어놓음
-
+    // 중복체크 메소드 -- 삭제될수도
+    boolean existsByPlace(String place);
 }
+
