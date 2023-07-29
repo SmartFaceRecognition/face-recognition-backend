@@ -28,8 +28,7 @@ public class Wharf {
 //    @OneToMany(mappedBy = "wharf")
 //    private List<Control> controlList = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "personWharfID")
+    @OneToMany(mappedBy = "wharf")
     private List<PersonWharf> personWharfList = new ArrayList<>();
 
     // guestWharfList 삭제

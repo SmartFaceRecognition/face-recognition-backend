@@ -54,5 +54,4 @@ public class Person {
     // 여기 상속관계를 추가해야될 수도 있음
     @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PersonWharf> personWharfList = new ArrayList<>();
-    
 }

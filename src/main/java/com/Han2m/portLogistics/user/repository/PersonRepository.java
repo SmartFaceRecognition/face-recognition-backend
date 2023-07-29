@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
-
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findByPosition(String position); // 직원 정보 조회
