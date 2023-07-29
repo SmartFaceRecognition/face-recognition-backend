@@ -20,30 +20,18 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guestID")
     private Long id;
-    private String name;
-    private String birth;
-    private String phone;
     private String ssn;
     private String address;
-    private String sex; // boolean
 
-
-    public Guest(Long id, String name, String birth, String phone, String ssn, String address, String sex) {
+    public Guest(Long id, String ssn, String address) {
         this.id = id;
-        this.name = name;
-        this.birth = birth;
-        this.phone = phone;
         this.ssn = ssn;
         this.address = address;
-        this.sex = sex;
     }
 
-    @OneToMany(mappedBy = "guest")
-    private List<Status> statusList = new ArrayList<>();
+    // mappedby 삭제하고 joincolumn만 했음
+    @OneToOne
+    @JoinColumn(name = "personID")
+    private Person person;
 
-    @OneToMany(mappedBy = "guest")
-    private List<Control> controlList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "guest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<GuestWharf> GuestWharfList = new ArrayList<>();
 }

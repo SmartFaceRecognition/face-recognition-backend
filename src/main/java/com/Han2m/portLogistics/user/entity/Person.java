@@ -38,19 +38,19 @@ public class Person {
     }
 
 
+    //@OneToOne(cascade = CascadeType.ALL) <<-- 안되면 참고 !!
+    @OneToOne(mappedBy = "person")
+    private Guest guest;
+
+    @OneToOne(mappedBy = "person")
+    private Worker worker;
+
     @OneToMany(mappedBy = "person")
     private List<Status> statusList = new ArrayList<>();
 
     @OneToMany(mappedBy = "person")
     private List<Control> controlList = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "person")
-    private List<Guest> guestList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person")
-    private List<Worker> workerList = new ArrayList<>();
-
-    
     // 여기 상속관계를 추가해야될 수도 있음
     @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PersonWharf> personWharfList = new ArrayList<>();

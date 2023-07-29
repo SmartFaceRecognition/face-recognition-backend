@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 public class PersonWharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userWharfID")
+    @Column(name = "personWharfID")
     private Long id;
 
     public PersonWharf(Person person, Wharf wharf) {

@@ -25,13 +25,12 @@ public class Wharf {
         this.place = place;
     }
 
-    @OneToMany(mappedBy = "wharf")
-    private List<Control> controlList = new ArrayList<>();
+//    @OneToMany(mappedBy = "wharf")
+//    private List<Control> controlList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "wharf")
+    @OneToMany
+    @JoinColumn(name = "personWharfID")
     private List<PersonWharf> personWharfList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "wharf")
-    private List<GuestWharf> guestWharfList = new ArrayList<>();
-
+    // guestWharfList 삭제
 }

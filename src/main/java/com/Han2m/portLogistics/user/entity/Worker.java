@@ -24,4 +24,8 @@ public class Worker {
         this.fingerprint = fingerprint;
         this.position = position;
     }
+
+    @OneToOne
+    @JoinColumn(name = "personID")
+    private Person person;
 }
