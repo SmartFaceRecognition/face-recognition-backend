@@ -46,9 +46,4 @@ public class GuestController {
         return ResponseEntity.ok(guests);
     }
 
-
-
-// 페이징 등 기능 추가
-
-
 }

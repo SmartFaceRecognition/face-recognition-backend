@@ -22,12 +22,12 @@ public class Person {
     private Long id;
     private String nationality;
     private String name;
-    private boolean isWorker;
-    private boolean sex;
+    private Boolean isWorker;
+    private Boolean sex;
     private String birth;
     private String phone;
 
-    public Person(Long id, String nationality, String name, boolean isWorker, boolean sex, String birth, String phone) {
+    public Person(Long id, String nationality, String name, Boolean isWorker, Boolean sex, String birth, String phone) {
         this.id = id;
         this.nationality = nationality;
         this.name = name;

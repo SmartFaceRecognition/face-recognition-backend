@@ -1,9 +1,9 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.user.dto.GuestDto;
 import com.Han2m.portLogistics.user.dto.PersonDto;
-import com.Han2m.portLogistics.user.entity.Person;
-import com.Han2m.portLogistics.user.entity.PersonWharf;
-import com.Han2m.portLogistics.user.entity.Wharf;
+import com.Han2m.portLogistics.user.dto.WorkerDto;
+import com.Han2m.portLogistics.user.entity.*;
 import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.amazonaws.services.kms.model.NotFoundException;
@@ -56,7 +56,6 @@ public class PersonService {
 
     @Transactional
     public PersonDto registerPerson(PersonDto personDto) {
-        // existing code...
 
         if (personDto.getWharfs() != null) {
             List<String> uniqueWharfs = personDto.getWharfs().stream().distinct().collect(Collectors.toList());
@@ -139,12 +138,29 @@ public class PersonService {
         person.setNationality(personDto.getNationality());
         person.setName(personDto.getName());
         person.setBirth(personDto.getBirth());
+        person.setIsWorker(personDto.getIsWorker());
+        person.setSex(personDto.getSex());
         person.setPhone(personDto.getPhone());
-        person.setPosition(personDto.getPosition());
-        person.setFaceUrl(personDto.getFaceUrl());
+
+
+        //GuestDto나 WorkerDto가 null이 아닌 경우에만 엔티티를 생성하고 설정
+        if(personDto.getGuest() != null) {
+            Guest guest = new Guest();
+            guest.setSsn(personDto.getGuest().getSsn());
+            guest.setAddress(personDto.getGuest().getAddress());
+            person.setGuest(guest);
+        }
+
+        if(personDto.getWorker() != null) {
+            Worker worker = new Worker();
+            worker.setPosition(personDto.getWorker().getPosition());
+            worker.setFaceUrl(personDto.getWorker().getFaceUrl());
+            worker.setFingerprint(personDto.getWorker().getFingerPrint());
+            person.setWorker(worker);
+        }
 
         // 부두 관련
-        List<PersonWharf> personWharves = new ArrayList<>();
+        List<PersonWharf> personWharfList = new ArrayList<>();
         List<String> wharfPlaces = personDto.getWharfs();
         if (wharfPlaces != null) {
             for (String place : wharfPlaces) {
@@ -153,11 +169,11 @@ public class PersonService {
                     Wharf wharfEntity = wharfEntities.get(0);
 
                     PersonWharf personWharf = new PersonWharf(person, wharfEntity);
-                    personWharves.add(personWharf);
+                    personWharfList.add(personWharf);
                 }
             }
         }
-        person.setPersonWharfList(personWharves);
+        person.setPersonWharfList(personWharfList);
         return person;
     }
 
@@ -168,8 +184,22 @@ public class PersonService {
         personDto.setName(person.getName());
         personDto.setBirth(person.getBirth());
         personDto.setPhone(person.getPhone());
-        personDto.setPosition(person.getPosition());
-        personDto.setFaceUrl(person.getFaceUrl());
+
+        // Convert related entities to DTOs
+        if(person.getGuest() != null) {
+            GuestDto guestDto = new GuestDto();
+            guestDto.setSsn(person.getGuest().getSsn());
+            guestDto.setAddress(person.getGuest().getAddress());
+            personDto.setGuest(guestDto);
+        }
+
+        if(person.getWorker() != null) {
+            WorkerDto workerDto = new WorkerDto();
+            workerDto.setPosition(person.getWorker().getPosition());
+            workerDto.setFaceUrl(person.getWorker().getFaceUrl());
+            workerDto.setFingerPrint(person.getWorker().getFingerprint());
+            personDto.setWorker(workerDto);
+        }
 
         List<String> wharfPlaces = person.getPersonWharfList().stream()
                 .map(PersonWharf::getWharf)
@@ -179,6 +209,7 @@ public class PersonService {
 
         return personDto;
     }
+
 
 
     // 테스트용 랜덤부두, 인스턴스 생성시 아래 메소드 자동 호출
