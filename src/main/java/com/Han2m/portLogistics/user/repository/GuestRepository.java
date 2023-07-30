@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface GuestRepository extends JpaRepository<Guest, Long> {
-    List<Guest> findByPersonName(String name);
-
+    List<Guest> findByGuestName(String name);
 }

@@ -17,11 +17,11 @@ public class PersonController {
 
     private final PersonService personService;
 
-    @GetMapping("/person/{id}")
-    public ResponseEntity<PersonDto> getPersonById(@PathVariable Long id) {
-        PersonDto personDto = personService.getPersonById(id);
-        return ResponseEntity.ok(personDto);
-    }
+//    @GetMapping("/person/{id}")
+//    public ResponseEntity<PersonDto> getPersonById(@PathVariable Long id) {
+//        PersonDto personDto = personService.getPersonById(id);
+//        return ResponseEntity.ok(personDto);
+//    }
 
     @PostMapping("/person/register")
     public ResponseEntity<PersonDto> registerPerson(@RequestBody PersonDto personDTO) {

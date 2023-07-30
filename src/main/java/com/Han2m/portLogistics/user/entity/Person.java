@@ -13,16 +13,17 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "type")
 public class Person {
 
-    // 국적, 성별, 생년월일 등은 @Column(updatable = false)이 필요할 수도 있겠다
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "personID")
     private Long id;
     private String nationality;
     private String name;
-    private Boolean isWorker;
+    private Boolean isWorker; // 직원 True, 손님 False
     private Boolean sex;
     private String birth;
     private String phone;
@@ -36,14 +37,6 @@ public class Person {
         this.birth = birth;
         this.phone = phone;
     }
-
-
-    //@OneToOne(cascade = CascadeType.ALL) <<-- 안되면 참고 !!
-    @OneToOne(mappedBy = "person")
-    private Guest guest;
-
-    @OneToOne(mappedBy = "person")
-    private Worker worker;
 
     @OneToMany(mappedBy = "person")
     private List<Status> statusList = new ArrayList<>();

@@ -20,6 +20,8 @@ public interface WharfRepository extends JpaRepository<Wharf, Long> {
     @Query("SELECT pw.person FROM PersonWharf pw WHERE pw.wharf.place = :place")
     List<Person> findPersonsByPlace(@Param("place") String place);
 
+    List<Wharf> findByPlace(String place);
+
     // 중복체크 메소드 -- 삭제될 수도 있음
     boolean existsByPlace(String place);
 }

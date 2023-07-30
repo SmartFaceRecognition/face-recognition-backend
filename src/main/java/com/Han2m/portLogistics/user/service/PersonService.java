@@ -36,26 +36,77 @@ public class PersonService {
 
 
     // 직원 조회
-    public PersonDto getPersonById(Long id) {
-        Optional<Person> optionalPerson = personRepository.findById(id);
-        if (optionalPerson.isPresent()) {
-            Person person = optionalPerson.get();
-            PersonDto personDto = convertToPersonDTO(person);
+//    public PersonDto getPersonById(Long id) {
+//        Optional<Person> optionalPerson = personRepository.findById(id);
+//        if (optionalPerson.isPresent()) {
+//            Person person = optionalPerson.get();
+//            PersonDto personDto;
+//            if (person instanceof Worker) {
+//                Worker worker = (Worker) person;
+//                WorkerDto workerDto = new WorkerDto();
+//                workerDto.setNationality(worker.getNationality());
+//                workerDto.setName(worker.getName());
+//                workerDto.setBirth(worker.getBirth());
+//                workerDto.setSex(worker.getSex());
+//                workerDto.setPhone(worker.getPhone());
+//                workerDto.setWorker(new WorkerInfoDto(worker.getPosition(), worker.getFaceUrl(), worker.getFingerprint()));
+//                personDto = workerDto;
+//            } else if (person instanceof Guest) {
+//                Guest guest = (Guest) person;
+//                GuestDto guestDto = new GuestDto();
+//                guestDto.setNationality(guest.getNationality());
+//                guestDto.setName(guest.getName());
+//                guestDto.setBirth(guest.getBirth());
+//                guestDto.setSex(guest.getSex());
+//                guestDto.setPhone(guest.getPhone());
+//                guestDto.setGuest(new GuestInfoDto(guest.getSsn(), guest.getAddress()));
+//                personDto = guestDto;
+//            } else {
+//                throw new IllegalArgumentException("Unexpected Person type: " + person.getClass().getName());
+//            }
+//
+//            // 나머지 로직은 동일합니다.
+//            List<Wharf> wharfList = wharfRepository.findByPersonWharfListPersonId(person.getId());
+//            List<String> wharfs = wharfList.stream()
+//                    .map(Wharf::getPlace)
+//                    .collect(Collectors.toList());
+//            personDto.setWharfs(wharfs);
+//
+//            return personDto;
+//        } else {
+//            throw new EntityNotFoundException("직원을 찾을 수 없습니다. ID: " + id);
+//        }
+//    }
 
-            List<Wharf> wharfList = wharfRepository.findByPersonWharfListPersonId(person.getId());
-            List<String> wharfs = wharfList.stream()
-                    .map(Wharf::getPlace)
-                    .collect(Collectors.toList());
-            personDto.setWharfs(wharfs);
-
-            return personDto;
-        } else {
-            throw new EntityNotFoundException("직원을 찾을 수 없습니다. ID: " + id);
-        }
-    }
 
     @Transactional
     public PersonDto registerPerson(PersonDto personDto) {
+        Person person;
+        if (personDto.getIsWorker()) {
+            // Worker 코드
+            Worker worker = new Worker();
+            worker.setNationality(personDto.getNationality());
+            worker.setName(personDto.getName());
+            worker.setSex(personDto.getSex());
+            worker.setBirth(personDto.getBirth());
+            worker.setPhone(personDto.getPhone());
+            worker.setPosition(personDto.getWorker().getPosition());
+            worker.setFaceUrl(personDto.getWorker().getFaceUrl());
+            worker.setFingerprint(personDto.getWorker().getFingerPrint());
+            person = worker;
+        } else {
+            // Guest 코드
+            Guest guest = new Guest();
+            guest.setNationality(personDto.getNationality());
+            guest.setName(personDto.getName());
+            guest.setSex(personDto.getSex());
+            guest.setBirth(personDto.getBirth());
+            guest.setPhone(personDto.getPhone());
+            guest.setSsn(personDto.getGuest().getSsn());
+            person = guest;
+        }
+
+        Person savedPerson = personRepository.save(person);
 
         if (personDto.getWharfs() != null) {
             List<String> uniqueWharfs = personDto.getWharfs().stream().distinct().collect(Collectors.toList());
@@ -71,7 +122,6 @@ public class PersonService {
                 }
             }
         }
-        // additional code to set Guest or Worker entity...
         return convertToPersonDTO(savedPerson);
     }
 
@@ -80,13 +130,31 @@ public class PersonService {
     public PersonDto editPersonInfo(Long id, PersonDto updatedPersonDTO) {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 직원이 없습니다."));
-        person.setNationality(updatedPersonDTO.getNationality());
-        person.setName(updatedPersonDTO.getName());
-        person.setBirth(updatedPersonDTO.getBirth());
-        person.setPhone(updatedPersonDTO.getPhone());
-        person.setPosition(updatedPersonDTO.getPosition());
-        person.setFaceUrl(updatedPersonDTO.getFaceUrl());
+        if (person instanceof Worker && updatedPersonDTO.getIsWorker()) {
+            // Worker 정보 수정
+            Worker worker = (Worker) person;
+            worker.setNationality(updatedPersonDTO.getNationality());
+            worker.setName(updatedPersonDTO.getName());
+            worker.setBirth(updatedPersonDTO.getBirth());
+            worker.setSex(updatedPersonDTO.getSex());
+            worker.setPhone(updatedPersonDTO.getPhone());
+            worker.setPosition(updatedPersonDTO.getWorker().getPosition());
+            worker.setFaceUrl(updatedPersonDTO.getWorker().getFaceUrl());
+            worker.setFingerprint(updatedPersonDTO.getWorker().getFingerPrint());
+        } else if (person instanceof Guest && !updatedPersonDTO.getIsWorker()) {
+            // Guest 정보 수정
+            Guest guest = (Guest) person;
+            guest.setNationality(updatedPersonDTO.getNationality());
+            guest.setName(updatedPersonDTO.getName());
+            guest.setBirth(updatedPersonDTO.getBirth());
+            guest.setSex(updatedPersonDTO.getSex());
+            guest.setPhone(updatedPersonDTO.getPhone());
+            guest.setSsn(updatedPersonDTO.getGuest().getSsn());
+        } else {
+            throw new IllegalArgumentException("Person type and DTO type mismatch");
+        }
 
+        // 나머지 로직은 동일합니다.
         List<PersonWharf> updatedPersonWharves = new ArrayList<>();
         List<String> updatedWharfPlaces = updatedPersonDTO.getWharfs();
         if (updatedWharfPlaces != null) {
@@ -134,29 +202,34 @@ public class PersonService {
     }
 
     private Person convertToPersonEntity(PersonDto personDto) {
-        Person person = new Person();
-        person.setNationality(personDto.getNationality());
-        person.setName(personDto.getName());
-        person.setBirth(personDto.getBirth());
-        person.setIsWorker(personDto.getIsWorker());
-        person.setSex(personDto.getSex());
-        person.setPhone(personDto.getPhone());
 
+        Person person;
 
-        //GuestDto나 WorkerDto가 null이 아닌 경우에만 엔티티를 생성하고 설정
-        if(personDto.getGuest() != null) {
-            Guest guest = new Guest();
-            guest.setSsn(personDto.getGuest().getSsn());
-            guest.setAddress(personDto.getGuest().getAddress());
-            person.setGuest(guest);
-        }
-
-        if(personDto.getWorker() != null) {
+        // 직원 정보 등록하기
+        if (personDto.getIsWorker()) {
             Worker worker = new Worker();
+            worker.setNationality(personDto.getNationality());
+            worker.setName(personDto.getName());
+            worker.setBirth(personDto.getBirth());
+            worker.setSex(personDto.getSex());
+            worker.setPhone(personDto.getPhone());
             worker.setPosition(personDto.getWorker().getPosition());
             worker.setFaceUrl(personDto.getWorker().getFaceUrl());
             worker.setFingerprint(personDto.getWorker().getFingerPrint());
-            person.setWorker(worker);
+            person = worker;
+        }
+
+
+        // 손님 정보 등록하기
+        else {
+            Guest guest = new Guest();
+            guest.setNationality(personDto.getNationality());
+            guest.setName(personDto.getName());
+            guest.setBirth(personDto.getBirth());
+            guest.setSex(personDto.getSex());
+            guest.setPhone(personDto.getPhone());
+            guest.setSsn(personDto.getGuest().getSsn());
+            person = guest;
         }
 
         // 부두 관련
@@ -167,7 +240,6 @@ public class PersonService {
                 List<Wharf> wharfEntities = wharfRepository.findByPlace(place);
                 if (!wharfEntities.isEmpty()) {
                     Wharf wharfEntity = wharfEntities.get(0);
-
                     PersonWharf personWharf = new PersonWharf(person, wharfEntity);
                     personWharfList.add(personWharf);
                 }
@@ -183,22 +255,21 @@ public class PersonService {
         personDto.setNationality(person.getNationality());
         personDto.setName(person.getName());
         personDto.setBirth(person.getBirth());
+        personDto.setSex(person.getSex());
         personDto.setPhone(person.getPhone());
 
-        // Convert related entities to DTOs
-        if(person.getGuest() != null) {
-            GuestDto guestDto = new GuestDto();
-            guestDto.setSsn(person.getGuest().getSsn());
-            guestDto.setAddress(person.getGuest().getAddress());
-            personDto.setGuest(guestDto);
-        }
-
-        if(person.getWorker() != null) {
+        if (person instanceof Worker) {
             WorkerDto workerDto = new WorkerDto();
-            workerDto.setPosition(person.getWorker().getPosition());
-            workerDto.setFaceUrl(person.getWorker().getFaceUrl());
-            workerDto.setFingerPrint(person.getWorker().getFingerprint());
+            workerDto.setPosition(((Worker) person).getPosition());
+            workerDto.setFaceUrl(((Worker) person).getFaceUrl());
+            workerDto.setFingerPrint(((Worker) person).getFingerprint());
             personDto.setWorker(workerDto);
+            personDto.setIsWorker(true);
+        } else if (person instanceof Guest) {
+            GuestDto guestDto = new GuestDto();
+            guestDto.setSsn(((Guest) person).getSsn());
+            personDto.setGuest(guestDto);
+            personDto.setIsWorker(false);
         }
 
         List<String> wharfPlaces = person.getPersonWharfList().stream()
@@ -206,10 +277,8 @@ public class PersonService {
                 .map(Wharf::getPlace)
                 .collect(Collectors.toList());
         personDto.setWharfs(wharfPlaces);
-
         return personDto;
     }
-
 
 
     // 테스트용 랜덤부두, 인스턴스 생성시 아래 메소드 자동 호출

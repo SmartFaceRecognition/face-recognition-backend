@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
-    List<Worker> findByPersonName(String name);
+    List<Worker> findByWorkerName(String name);
 }

@@ -9,23 +9,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Worker {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "workerID")
-    private Long id;
+public class Worker extends Person{
+
     private String faceUrl;
     private String fingerprint;
-    private String position;
+    private String position; // 직급
 
-    public Worker(Long id, String faceUrl, String fingerprint, String position) {
-        this.id = id;
+    public Worker(Long id, String nationality, String name, Boolean isWorker, Boolean sex, String birth, String phone, String faceUrl, String fingerprint, String position) {
+        super(id, nationality, name, Boolean.TRUE, sex, birth, phone);
         this.faceUrl = faceUrl;
         this.fingerprint = fingerprint;
         this.position = position;
     }
-
-    @OneToOne
-    @JoinColumn(name = "personID")
-    private Person person;
 }
