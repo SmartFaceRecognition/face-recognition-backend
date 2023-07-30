@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class WorkerDto {
-
+public class WorkerDto extends PersonDto {
     private String position;
     private String faceUrl;
     private String fingerPrint;

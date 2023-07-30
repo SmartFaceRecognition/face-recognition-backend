@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GuestDto {
+public class GuestDto extends PersonDto {
     private String ssn;
 }

@@ -1,6 +1,8 @@
 package com.Han2m.portLogistics.user.controller;
 
+import com.Han2m.portLogistics.user.dto.GuestDto;
 import com.Han2m.portLogistics.user.dto.PersonDto;
+import com.Han2m.portLogistics.user.dto.WorkerDto;
 import com.Han2m.portLogistics.user.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,28 +19,61 @@ public class PersonController {
 
     private final PersonService personService;
 
-//    @GetMapping("/person/{id}")
-//    public ResponseEntity<PersonDto> getPersonById(@PathVariable Long id) {
-//        PersonDto personDto = personService.getPersonById(id);
-//        return ResponseEntity.ok(personDto);
-//    }
 
-    @PostMapping("/person/register")
-    public ResponseEntity<PersonDto> registerPerson(@RequestBody PersonDto personDTO) {
-        PersonDto registeredPerson = personService.registerPerson(personDTO);
-        return ResponseEntity.ok(registeredPerson);
+
+    // Worker
+    @GetMapping("/worker/{id}")
+    public ResponseEntity<WorkerDto> getWorkerById(@PathVariable Long id) {
+        WorkerDto workerDto = personService.getWorkerById(id);
+        return ResponseEntity.ok(workerDto);
     }
 
-    @PutMapping("/person/{id}")
-    public ResponseEntity<PersonDto> updatePerson(@PathVariable Long id, @RequestBody PersonDto updatedPersonDTO) {
-        PersonDto updatedPerson = personService.editPersonInfo(id, updatedPersonDTO);
-        return ResponseEntity.ok(updatedPerson);
+    @PostMapping("/worker/register")
+    public ResponseEntity<WorkerDto> registerWorker(@RequestBody WorkerDto workerDTO) {
+        WorkerDto registeredWorker = personService.registerWorker(workerDTO);
+        return ResponseEntity.ok(registeredWorker);
     }
 
-    @DeleteMapping("/person/{id}")
-    public ResponseEntity<String> deletePersonById(@PathVariable Long id) {
+    @PutMapping("/worker/{id}")
+    public ResponseEntity<WorkerDto> updateWorker(@PathVariable Long id, @RequestBody WorkerDto updatedWorkerDTO) {
+        WorkerDto updatedWorker = personService.editWorkerInfo(id, updatedWorkerDTO);
+        return ResponseEntity.ok(updatedWorker);
+    }
+
+    @DeleteMapping("/worker/{id}")
+    public ResponseEntity<String> deleteWorkerById(@PathVariable Long id) {
         personService.deletePerson(id);
-        String responseMessage = id + "이(가) 삭제되었습니다.";
+        String responseMessage = id + "번 직원이 삭제되었습니다.";
+        return ResponseEntity.ok(responseMessage);
+    }
+
+
+
+
+
+    // Guest
+    @GetMapping("/guest/{id}")
+    public ResponseEntity<GuestDto> getGuestById(@PathVariable Long id) {
+        GuestDto guestDto = personService.getGuestById(id);
+        return ResponseEntity.ok(guestDto);
+    }
+
+    @PostMapping("/guest/register")
+    public ResponseEntity<GuestDto> registerGuest(@RequestBody GuestDto guestDTO) {
+        GuestDto registeredGuest = personService.registerGuest(guestDTO);
+        return ResponseEntity.ok(registeredGuest);
+    }
+
+    @PutMapping("/guest/{id}")
+    public ResponseEntity<GuestDto> updateGuest(@PathVariable Long id, @RequestBody GuestDto updatedGuestDTO) {
+        GuestDto updatedGuest = personService.editGuestInfo(id, updatedGuestDTO);
+        return ResponseEntity.ok(updatedGuest);
+    }
+
+    @DeleteMapping("/guest/{id}")
+    public ResponseEntity<String> deleteGuestById(@PathVariable Long id) {
+        personService.deletePerson(id);
+        String responseMessage = id + "번 손님이 삭제되었습니다.";
         return ResponseEntity.ok(responseMessage);
     }
 

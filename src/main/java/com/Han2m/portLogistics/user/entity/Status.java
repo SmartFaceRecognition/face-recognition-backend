@@ -14,11 +14,13 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusID")
     private Long id;
+    private String wharf;
     private String enterTime;
     private String outTime;
 
-    public Status(Long id, String enterTime, String outTime) {
+    public Status(Long id, String wharf, String enterTime, String outTime) {
         this.id = id;
+        this.wharf = wharf;
         this.enterTime = enterTime;
         this.outTime = outTime;
     }

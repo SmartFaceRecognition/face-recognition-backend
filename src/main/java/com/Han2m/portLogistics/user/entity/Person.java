@@ -38,10 +38,10 @@ public class Person {
         this.phone = phone;
     }
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Control> controlList = new ArrayList<>();
 
     // 여기 상속관계를 추가해야될 수도 있음

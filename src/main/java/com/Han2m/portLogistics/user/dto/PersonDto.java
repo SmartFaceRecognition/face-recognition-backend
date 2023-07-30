@@ -17,7 +17,6 @@ public class PersonDto {
     private String birth;
     private String phone;
     private List<String> wharfs;
-
-    private GuestDto guest;
-    private WorkerDto worker;
+//    private GuestDto guest;
+//    private WorkerDto worker;
 }
