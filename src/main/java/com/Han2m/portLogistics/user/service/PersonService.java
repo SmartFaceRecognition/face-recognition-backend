@@ -42,7 +42,7 @@ public class PersonService {
             Person person = optionalPerson.get();
             PersonDto personDto = convertToPersonDTO(person);
 
-            List<Wharf> wharfList = wharfRepository.findByUserWharfListPersonId(person.getId());
+            List<Wharf> wharfList = wharfRepository.findByPersonWharfListPersonId(person.getId());
             List<String> wharfs = wharfList.stream()
                     .map(Wharf::getPlace)
                     .collect(Collectors.toList());
@@ -54,12 +54,9 @@ public class PersonService {
         }
     }
 
-
-    // 직원 등록
     @Transactional
     public PersonDto registerPerson(PersonDto personDto) {
-        Person person = convertToPersonEntity(personDto);
-        Person savedPerson = personRepository.save(person);
+        // existing code...
 
         if (personDto.getWharfs() != null) {
             List<String> uniqueWharfs = personDto.getWharfs().stream().distinct().collect(Collectors.toList());
@@ -75,6 +72,7 @@ public class PersonService {
                 }
             }
         }
+        // additional code to set Guest or Worker entity...
         return convertToPersonDTO(savedPerson);
     }
 
