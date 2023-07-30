@@ -20,18 +20,14 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guestID")
     private Long id;
-    private String ssn;
-    private String address;
+    private String ssn; // 주민번호
 
-    public Guest(Long id, String ssn, String address) {
+    public Guest(Long id, String ssn ) {
         this.id = id;
         this.ssn = ssn;
-        this.address = address;
     }
 
-    // mappedby 삭제하고 joincolumn만 했음
     @OneToOne
     @JoinColumn(name = "personID")
     private Person person;
-
 }

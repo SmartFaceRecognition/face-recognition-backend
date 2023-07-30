@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class GuestDto {
     private String ssn;
-    private String address;
 }
