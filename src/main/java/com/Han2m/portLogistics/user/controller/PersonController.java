@@ -20,8 +20,7 @@ public class PersonController {
     private final PersonService personService;
 
 
-
-    // Worker
+    // Worker 관련
     @GetMapping("/worker/{id}")
     public ResponseEntity<WorkerDto> getWorkerById(@PathVariable Long id) {
         WorkerDto workerDto = personService.getWorkerById(id);
@@ -51,7 +50,7 @@ public class PersonController {
 
 
 
-    // Guest
+    // Guest 관련
     @GetMapping("/guest/{id}")
     public ResponseEntity<GuestDto> getGuestById(@PathVariable Long id) {
         GuestDto guestDto = personService.getGuestById(id);
@@ -109,4 +108,5 @@ public class PersonController {
         List<PersonDto> persons = personService.searchPersonByName(name);
         return ResponseEntity.ok(persons);
     }
+
 }

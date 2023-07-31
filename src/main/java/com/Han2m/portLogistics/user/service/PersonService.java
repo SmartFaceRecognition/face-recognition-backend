@@ -48,6 +48,8 @@ public class PersonService {
 
         Worker worker = (Worker) person;
         WorkerDto workerDto = new WorkerDto();
+        workerDto.setId(worker.getId());
+        workerDto.setIsWorker(worker.getIsWorker());
         workerDto.setNationality(worker.getNationality());
         workerDto.setName(worker.getName());
         workerDto.setBirth(worker.getBirth());
@@ -57,7 +59,11 @@ public class PersonService {
         workerDto.setFaceUrl(worker.getFaceUrl());
         workerDto.setFingerPrint(worker.getFingerprint());
 
-        List<Wharf> wharfList = wharfRepository.findByPersonWharfListPersonId(worker.getId());
+        List<PersonWharf> personWharfList = personWharfRepository.findByPersonId(worker.getId());
+        List<Wharf> wharfList = personWharfList.stream()
+                .map(PersonWharf::getWharf)
+                .collect(Collectors.toList());
+
         List<String> wharfs = wharfList.stream()
                 .map(Wharf::getPlace)
                 .collect(Collectors.toList());
@@ -77,6 +83,8 @@ public class PersonService {
 
         Guest guest = (Guest) person;
         GuestDto guestDto = new GuestDto();
+        guestDto.setId(guest.getId());
+        guestDto.setIsWorker(guest.getIsWorker());
         guestDto.setNationality(guest.getNationality());
         guestDto.setName(guest.getName());
         guestDto.setBirth(guest.getBirth());
@@ -84,7 +92,11 @@ public class PersonService {
         guestDto.setPhone(guest.getPhone());
         guestDto.setSsn(guest.getSsn());
 
-        List<Wharf> wharfList = wharfRepository.findByPersonWharfListPersonId(guest.getId());
+        List<PersonWharf> personWharfList = personWharfRepository.findByPersonId(guest.getId());
+        List<Wharf> wharfList = personWharfList.stream()
+                .map(PersonWharf::getWharf)
+                .collect(Collectors.toList());
+
         List<String> wharfs = wharfList.stream()
                 .map(Wharf::getPlace)
                 .collect(Collectors.toList());
@@ -95,6 +107,7 @@ public class PersonService {
 
 
 
+    // 직원 등록
     @Transactional
     public WorkerDto registerWorker(WorkerDto workerDto) {
         Worker worker = new Worker();
@@ -116,6 +129,7 @@ public class PersonService {
         return convertToWorkerDTO(savedWorker);
     }
 
+    // 손님 등록
     @Transactional
     public GuestDto registerGuest(GuestDto guestDto) {
         Guest guest = new Guest();
@@ -135,6 +149,7 @@ public class PersonService {
         return convertToGuestDTO(savedGuest);
     }
 
+    // 부두 정보 저장하기 -- 직원용
     private void saveWorkerWharfs(List<String> wharfs, Worker savedWorker) {
         List<String> uniqueWharfs = wharfs.stream().distinct().collect(Collectors.toList());
         for (String wharfPlace : uniqueWharfs) {
@@ -156,6 +171,8 @@ public class PersonService {
         }
     }
 
+
+    // 부두 정보 저장하기 -- 손님용
     private void saveGuestWharfs(List<String> wharfs, Guest savedGuest) {
         List<String> uniqueWharfs = wharfs.stream().distinct().collect(Collectors.toList());
         for (String wharfPlace : uniqueWharfs) {

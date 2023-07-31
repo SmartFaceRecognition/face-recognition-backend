@@ -25,11 +25,7 @@ public class Wharf {
         this.place = place;
     }
 
-//    @OneToMany(mappedBy = "wharf")
-//    private List<Control> controlList = new ArrayList<>();
-
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
     private List<PersonWharf> personWharfList = new ArrayList<>();
 
-    // guestWharfList 삭제
 }
