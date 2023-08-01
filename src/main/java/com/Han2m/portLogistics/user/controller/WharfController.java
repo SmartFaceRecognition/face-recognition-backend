@@ -39,7 +39,7 @@ public class WharfController {
 
 
     // 부두별 직원 조회
-    @GetMapping("/wharf/current-person/{wharfName}")
+    @GetMapping("/wharf/current-worker/{wharfName}")
     public ResponseEntity<List<WorkerDto>> getCurrentEntrantsByWharf(@PathVariable String wharfName) {
         List<WorkerDto> currentPerson = wharfService.getCurrentWorkerByWharf(wharfName);
         return ResponseEntity.ok(currentPerson);

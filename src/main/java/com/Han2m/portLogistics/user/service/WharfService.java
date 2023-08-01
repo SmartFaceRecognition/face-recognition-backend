@@ -68,6 +68,7 @@ public class WharfService {
     private WorkerDto convertToWorkerDTO(Worker worker) {
         WorkerDto workerDto = new WorkerDto();
         workerDto.setId(worker.getId());
+        workerDto.setIsWorker(worker.getIsWorker());
         workerDto.setNationality(worker.getNationality());
         workerDto.setName(worker.getName());
         workerDto.setBirth(worker.getBirth());
@@ -76,6 +77,14 @@ public class WharfService {
         workerDto.setPosition(worker.getPosition());
         workerDto.setFaceUrl(worker.getFaceUrl());
         workerDto.setFingerPrint(worker.getFingerprint());
+
+        // 부두 관련 정보 추가
+        List<String> wharfs = worker.getPersonWharfList().stream()
+                .map(PersonWharf::getWharf)
+                .map(Wharf::getPlace)
+                .collect(Collectors.toList());
+        workerDto.setWharfs(wharfs);
+
         return workerDto;
     }
 
@@ -84,11 +93,20 @@ public class WharfService {
         GuestDto guestDto = new GuestDto();
         guestDto.setId(guest.getId());
         guestDto.setNationality(guest.getNationality());
+        guestDto.setIsWorker(guest.getIsWorker());
         guestDto.setName(guest.getName());
         guestDto.setBirth(guest.getBirth());
         guestDto.setSex(guest.getSex());
         guestDto.setPhone(guest.getPhone());
         guestDto.setSsn(guest.getSsn());
+
+        // 부두 관련 정보 추가
+        List<String> wharfs = guest.getPersonWharfList().stream()
+                .map(PersonWharf::getWharf)
+                .map(Wharf::getPlace)
+                .collect(Collectors.toList());
+        guestDto.setWharfs(wharfs);
+
         return guestDto;
     }
 
