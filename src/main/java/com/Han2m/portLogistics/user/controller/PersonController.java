@@ -77,18 +77,17 @@ public class PersonController {
     }
 
 
-    // 모든 사람 정보 조회 (페이징)
-    @GetMapping("/person/access-history")
-    public ResponseEntity<Page<PersonDto>> getAllPersons(
-                    @RequestParam(defaultValue = "0") int page,
-                    @RequestParam(defaultValue = "10") int size)
-    {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<PersonDto> persons = personService.getAllPersons(pageable);
+    // 직원 + 손님 이름으로 검색
+    @GetMapping("/person/search")
+    public ResponseEntity<List<PersonDto>> searchPersonsByName(
+            @RequestParam String name
+    ) {
+        List<PersonDto> persons = personService.searchPersonByName(name);
         return ResponseEntity.ok(persons);
     }
 
-    // 등록순으로 모든 사람 정보 조회 (페이징)
+
+    // 직원 + 손님 등록순으로 정보 조회 (페이징)
     @GetMapping("/person/orderByRegis")
     public ResponseEntity<Page<PersonDto>> getAllPersonsOrderByRegistrationDate(
             @RequestParam(defaultValue = "0") int page,
@@ -96,16 +95,6 @@ public class PersonController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PersonDto> persons = personService.getAllPersonsOrderByRegistrationDate(pageable);
-        return ResponseEntity.ok(persons);
-    }
-
-
-    // 이름으로 검색
-    @GetMapping("/person/search")
-    public ResponseEntity<List<PersonDto>> searchPersonsByName(
-            @RequestParam String name
-    ) {
-        List<PersonDto> persons = personService.searchPersonByName(name);
         return ResponseEntity.ok(persons);
     }
 

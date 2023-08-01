@@ -107,7 +107,7 @@ public class PersonService {
 
 
 
-    // 직원 등록
+    // Worker 등록
     @Transactional
     public WorkerDto registerWorker(WorkerDto workerDto) {
         Worker worker = new Worker();
@@ -129,7 +129,7 @@ public class PersonService {
         return convertToWorkerDTO(savedWorker);
     }
 
-    // 손님 등록
+    // Guest 등록
     @Transactional
     public GuestDto registerGuest(GuestDto guestDto) {
         Guest guest = new Guest();
@@ -246,6 +246,7 @@ public class PersonService {
     public void deletePerson(Long id) {
         personRepository.deleteById(id);
     }
+
 
     // 페이징
     public Page<PersonDto> getAllPersons(Pageable pageable) {
