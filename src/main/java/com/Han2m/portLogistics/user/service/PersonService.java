@@ -360,11 +360,11 @@ public class PersonService {
     // 테스트용 랜덤부두, 인스턴스 생성시 아래 메소드 자동 호출
     @PostConstruct
     public void createTestWharfs() {
-        Wharf wharf1 = new Wharf(1L, "제 1부두");
-        Wharf wharf2 = new Wharf(2L, "제 2부두");
-        Wharf wharf3 = new Wharf(3L, "제 3부두");
-        Wharf wharf4 = new Wharf(4L, "제 4부두");
-        Wharf wharf5 = new Wharf(5L, "제 5부두");
+        Wharf wharf1 = new Wharf(1L, "1wharf");
+        Wharf wharf2 = new Wharf(2L, "2wharf");
+        Wharf wharf3 = new Wharf(3L, "3wharf");
+        Wharf wharf4 = new Wharf(4L, "4wharf");
+        Wharf wharf5 = new Wharf(5L, "5wharf");
         wharfRepository.saveAll(List.of(wharf1, wharf2, wharf3, wharf4, wharf5));
     }
 }
