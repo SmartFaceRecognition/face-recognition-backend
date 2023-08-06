@@ -10,22 +10,21 @@ import jakarta.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PersonWharf {
+public class WorkerWharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "personWharfID")
-    private Long id;
+    private Long workerWharfId;
 
-    public PersonWharf(Person person, Wharf wharf) {
-        this.person = person;
+    public WorkerWharf(Worker worker, Wharf wharf) {
+        this.worker = worker;
         this.wharf = wharf;
     }
 
     @ManyToOne
-    @JoinColumn(name = "personID")
-    private Person person;
+    @JoinColumn(name = "workerId")
+    private Worker worker;
 
     @ManyToOne
-    @JoinColumn(name = "wharfID")
+    @JoinColumn(name = "wharfId")
     private Wharf wharf;
 }

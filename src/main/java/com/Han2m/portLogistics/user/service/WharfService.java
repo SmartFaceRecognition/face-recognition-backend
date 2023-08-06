@@ -1,15 +1,11 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.user.dto.GuestDto;
-import com.Han2m.portLogistics.user.dto.PersonDto;
-import com.Han2m.portLogistics.user.dto.WorkerDto;
+import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.entity.*;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,90 +20,46 @@ public class WharfService {
     }
 
     // 부두별 총 인원 수 조회
-    public int getTotalPersonByWharfName(String wharfName) {
-        List<Wharf> wharfs = wharfRepository.findByPlace(wharfName);
-        if (wharfs.isEmpty()) {
-            throw new EntityNotFoundException("The wharf with name " + wharfName + " does not exist.");
-        }
-        Wharf wharf = wharfs.get(0);
-        List<Person> persons = wharf.getPersonWharfList().stream()
-                .map(PersonWharf::getPerson)
-                .collect(Collectors.toList());
-        return persons.size();
-    }
-
-    // 부두별 직원 + 손님 모두 조회
-    public List<PersonDto> getCurrentPersonsByWharf(String wharf) {
-        List<WorkerDto> workers = getCurrentWorkerByWharf(wharf);
-        List<GuestDto> guests = getCurrentGuestByWharf(wharf);
-
-        List<PersonDto> persons = new ArrayList<>();
-        persons.addAll(workers);
-        persons.addAll(guests);
-
-        return persons;
-    }
+//    public int getTotalPersonByWharfName(String wharfName) {
+//        List<Wharf> wharfs = wharfRepository.findByPlace(wharfName);
+//        if (wharfs.isEmpty()) {
+//            throw new EntityNotFoundException("The wharf with name " + wharfName + " does not exist.");
+//        }
+//        Wharf wharf = wharfs.get(0);
+//        List<Person> persons = wharf.getWorkerWharfList().stream()
+//                .map(WorkerWharf::getPerson)
+//                .collect(Collectors.toList());
+//        return persons.size();
+//    }
 
 
     // 부두별 현재 직원만 조회
-    public List<WorkerDto> getCurrentWorkerByWharf(String wharf) {
+    public List<ReqWorkerDto> getCurrentWorkerByWharf(String wharf) {
         return wharfRepository.findWorkersByPlace(wharf).stream()
                 .map(person -> (Worker) person)
                 .map(this::convertToWorkerDTO)
                 .collect(Collectors.toList());
     }
 
-    // 부두별 현재 손님만 조회
-    public List<GuestDto> getCurrentGuestByWharf(String wharf) {
-        return wharfRepository.findGuestsByPlace(wharf).stream()
-                .map(person -> (Guest) person)
-                .map(this::convertToGuestDTO)
-                .collect(Collectors.toList());
-    }
+    private ReqWorkerDto convertToWorkerDTO(Worker worker) {
+        ReqWorkerDto reqWorkerDto = new ReqWorkerDto();
+        reqWorkerDto.setNationality(worker.getNationality());
+        reqWorkerDto.setName(worker.getName());
+        reqWorkerDto.setBirth(worker.getBirth());
+        reqWorkerDto.setSex(worker.getSex());
+        reqWorkerDto.setPhone(worker.getPhone());
+        reqWorkerDto.setPosition(worker.getPosition());
 
-    private WorkerDto convertToWorkerDTO(Worker worker) {
-        WorkerDto workerDto = new WorkerDto();
-        workerDto.setId(worker.getId());
-        workerDto.setIsWorker(worker.getIsWorker());
-        workerDto.setNationality(worker.getNationality());
-        workerDto.setName(worker.getName());
-        workerDto.setBirth(worker.getBirth());
-        workerDto.setSex(worker.getSex());
-        workerDto.setPhone(worker.getPhone());
-        workerDto.setPosition(worker.getPosition());
-        workerDto.setFaceUrl(worker.getFaceUrl());
-        workerDto.setFingerPrint(worker.getFingerprint());
 
         // 부두 관련 정보 추가
-        List<String> wharfs = worker.getPersonWharfList().stream()
-                .map(PersonWharf::getWharf)
+        List<String> wharfs = worker.getWorkerWharfList().stream()
+                .map(WorkerWharf::getWharf)
                 .map(Wharf::getPlace)
                 .collect(Collectors.toList());
-        workerDto.setWharfs(wharfs);
+        reqWorkerDto.setWharfs(wharfs);
 
-        return workerDto;
+        return reqWorkerDto;
     }
 
-
-    private GuestDto convertToGuestDTO(Guest guest) {
-        GuestDto guestDto = new GuestDto();
-        guestDto.setId(guest.getId());
-        guestDto.setNationality(guest.getNationality());
-        guestDto.setIsWorker(guest.getIsWorker());
-        guestDto.setName(guest.getName());
-        guestDto.setBirth(guest.getBirth());
-        guestDto.setSex(guest.getSex());
-        guestDto.setPhone(guest.getPhone());
-        guestDto.setSsn(guest.getSsn());
-
-        // 부두 관련 정보 추가
-        List<String> wharfs = guest.getPersonWharfList().stream()
-                .map(PersonWharf::getWharf)
-                .map(Wharf::getPlace)
-                .collect(Collectors.toList());
-        guestDto.setWharfs(wharfs);
-
-        return guestDto;
-    }
 
 }

@@ -12,21 +12,13 @@ import lombok.Setter;
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "statusID")
-    private Long id;
+    private Long statusId;
     private String wharf;
     private String enterTime;
     private String outTime;
 
-    public Status(Long id, String wharf, String enterTime, String outTime) {
-        this.id = id;
-        this.wharf = wharf;
-        this.enterTime = enterTime;
-        this.outTime = outTime;
-    }
-
     @ManyToOne
-    @JoinColumn(name = "personID")
-    private Person person;
+    @JoinColumn(name = "workerId")
+    private Worker worker;
 
 }

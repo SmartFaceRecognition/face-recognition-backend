@@ -12,19 +12,12 @@ import lombok.Setter;
 public class Control {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "controlID")
-    private Long id;
+    private Long controlId;
     private String openTime;
     private String closeTime;
 
-    public Control(Long id, String openTime, String closeTime) {
-        this.id = id;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
-    }
-
     @ManyToOne
-    @JoinColumn(name = "personID")
-    private Person person;
+    @JoinColumn(name = "worker_id")
+    private Worker worker;
 
 }

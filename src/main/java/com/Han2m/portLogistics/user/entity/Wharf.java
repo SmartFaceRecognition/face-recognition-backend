@@ -1,6 +1,7 @@
 package com.Han2m.portLogistics.user.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,16 +17,14 @@ public class Wharf {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wharfID")
-    private Long id;
+    private Long wharfId;
     public String place;
 
-    public Wharf(Long id, String place) {
-        this.id = id;
+    @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
+    private List<WorkerWharf> workerWharfList = new ArrayList<>();
+
+    public Wharf(Long wharfId, String place) {
+        this.wharfId = wharfId;
         this.place = place;
     }
-
-    @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
-    private List<PersonWharf> personWharfList = new ArrayList<>();
-
 }
