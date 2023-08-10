@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.user.dto.req.ReqRegisterFingerPrintDto;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.Wharf;
@@ -12,11 +13,16 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -102,27 +108,40 @@ public class WorkerService {
     }
 
     //url 저장
-    public ResWorkerDto registerWorkerUrl(Worker worker, String faceUrl, String fingerUrl) {
+    public ResWorkerDto registerWorkerUrl(Worker worker, String faceUrl) {
 
         worker.setFaceUrl(faceUrl);
-        worker.setFingerprintUrl(fingerUrl);
+        sendDataToApi(worker.getPersonId().toString(),faceUrl);
 
         return new ResWorkerDto(worker);
     }
 
+    public void sendDataToApi(String id,String faceurl){
 
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String apiUrl = "http://127.0.0.1:5000/face"; // 대상 API의 URL
+        String jsonBody = "{\"id\": \"" + id + "\", \"url\": \"" + faceurl + "\"}"; // 올바른 JSON 데이터 형식
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+        restTemplate.postForEntity(apiUrl, requestEntity, String.class);
+    }
 
     // 인원 삭제
     public void deleteWorker(Long id) {
         workerRepository.deleteById(id);
     }
 
+
     public Page<ResWorkerDto> getAllWorkers(Pageable pageable) {
         Page<Worker> workers = workerRepository.findAll(pageable);
         return workers.map(ResWorkerDto::new);
     }
 
-    public List<ResWorkerDto> searchPersonByName(String name) {
+    public List<ResWorkerDto> searchWorkerByName(String name) {
         List<Worker> workers = workerRepository.findByName(name);
         return workers.stream().map(ResWorkerDto::new).collect(Collectors.toList());
     }

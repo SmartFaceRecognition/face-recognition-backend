@@ -22,6 +22,5 @@ public class ResGuestDto extends PersonDto {
         super.setNationality(guest.getNationality());
         ssn = guest.getSsn();
         personId = guest.getPersonId();
-
     }
 }

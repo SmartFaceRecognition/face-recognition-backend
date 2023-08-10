@@ -15,7 +15,7 @@ public class ResWorkerDto extends PersonDto {
     private Long personId;
     private String position;
     private String faceUrl;
-
+    private String fingerprint;
     private List<String> wharfs;
 
     public ResWorkerDto(Worker worker) {
@@ -27,6 +27,7 @@ public class ResWorkerDto extends PersonDto {
         personId = worker.getPersonId();
         position = worker.getPosition();
         faceUrl = worker.getFaceUrl();
+        fingerprint = worker.getFingerprint();
         wharfs = worker.getWharfPlaces();
     }
 }

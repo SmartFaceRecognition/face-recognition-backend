@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Worker extends Person{
 
     private String faceUrl;
-    private String fingerprintUrl;
+    private String fingerprint;
     private String position; // 직급
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)

@@ -1,6 +1,5 @@
 package com.Han2m.portLogistics.user.controller;
 
-import com.Han2m.portLogistics.user.dto.PersonDto;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.Worker;
@@ -44,15 +43,14 @@ public class WorkerController {
     //Worker 등록
     @PostMapping("/worker/register")
     public ResponseEntity<Object> registerWorker(@RequestParam MultipartFile faceImg,
-                                                       @RequestParam MultipartFile fingerPrint, @RequestPart ReqWorkerDto reqWorkerDto)throws IOException {
+                                                      @RequestPart ReqWorkerDto reqWorkerDto)throws IOException {
 
         Worker worker = workerService.registerWorker(reqWorkerDto);
 
         //얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());
-        String fingerPrintUrl= s3Service.uploadFingerPrint(fingerPrint,worker.getPersonId());
 
-        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl,fingerPrintUrl);
+        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl);
 
         return successResponse(resWorkerDto);
     }
@@ -61,7 +59,7 @@ public class WorkerController {
     //Worker 수정
     @PutMapping("/worker/{id}")
     public ResponseEntity<Object> updateWorker(@PathVariable Long id,@RequestParam MultipartFile faceImg,
-                                                     @RequestParam MultipartFile fingerPrint, @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
+                                                     @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
 
         if(workerService.workerIsPresent(id)){
             return notFoundResponse("해당 직원이 존재하지 않습니다");
@@ -71,9 +69,8 @@ public class WorkerController {
 
         //얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());
-        String fingerPrintUrl= s3Service.uploadFingerPrint(fingerPrint,worker.getPersonId());
 
-        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl,fingerPrintUrl);
+        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl);
 
         return successResponse(resWorkerDto);
     }
@@ -91,6 +88,7 @@ public class WorkerController {
         return successResponse();
     }
 
+
     //직원들 조회
     @GetMapping("/workers")
     public ResponseEntity<Object> searchAllWorkers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -102,9 +100,22 @@ public class WorkerController {
     //직원 이름으로 조회
     @GetMapping("/worker/search")
     public ResponseEntity<Object> searchPersonsByName(@RequestParam String name) {
-        List<ResWorkerDto> workers = workerService.searchPersonByName(name);
+        List<ResWorkerDto> workers = workerService.searchWorkerByName(name);
         return successResponse(workers);
     }
 
+//    // 부두내 모든 직원 조회
+//    @GetMapping("/worker/wharf")
+//    public ResponseEntity<Object> searchAllWorkersInWharf() {
+//      //  Integer numPersons = workerService.getTotalPersonByWharfName(wharfName);
+//        //return ResponseEntity.ok();
+//    }
+//
+//    // 부두별 직원 조회
+//    @GetMapping("/worker/wharf/{wharfName}")
+//    public ResponseEntity<Object> searchAllWorkersInWharfByWharf(@PathVariable String wharfName) {
+//       // List<ReqWorkerDto> currentPerson = wharfService.getCurrentWorkerByWharf(wharfName);
+//        // return ResponseEntity.ok(currentPerson);
+//    }
 
 }

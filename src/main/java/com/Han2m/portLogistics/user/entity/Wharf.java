@@ -23,6 +23,9 @@ public class Wharf {
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
     private List<WorkerWharf> workerWharfList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
+    private List<Status> statusList = new ArrayList<>();
+
     public Wharf(Long wharfId, String place) {
         this.wharfId = wharfId;
         this.place = place;

@@ -2,11 +2,17 @@ package com.Han2m.portLogistics.user.service;
 
 import com.Han2m.portLogistics.user.dto.req.ReqGuestDto;
 import com.Han2m.portLogistics.user.dto.res.ResGuestDto;
+import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.*;
 import com.Han2m.portLogistics.user.repository.GuestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -60,6 +66,16 @@ public class GuestService {
 
     public void deleteGuest(Long id) {
         guestRepository.deleteById(id);
+    }
+
+    public Page<ResGuestDto> getAllGuests(Pageable pageable) {
+        Page<Guest> guests = guestRepository.findAll(pageable);
+        return guests.map(ResGuestDto::new);
+    }
+
+    public List<ResGuestDto> searchGuestByName(String name) {
+        List<Guest> guests = guestRepository.findByName(name);
+        return guests.stream().map(ResGuestDto::new).collect(Collectors.toList());
     }
 
 
