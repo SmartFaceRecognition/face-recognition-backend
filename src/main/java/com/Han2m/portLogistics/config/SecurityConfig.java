@@ -23,15 +23,18 @@ public class SecurityConfig{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // 서버에 저장하지 않아서 csrf 공격에 대한 옵션은 꺼둔다.
+                //폼 로그인 안함
+                .formLogin(AbstractHttpConfigurer::disable)
+                //세션 안씀
+                .sessionManagement((httpSecuritySessionManagementConfigurer ->
+                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)))
                 .authorizeHttpRequests((authorizeRequests) -> {
                     // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문
 //                    authorizeRequests.requestMatchers("/login").permitAll();
                     authorizeRequests.anyRequest().permitAll(); // 그 외의 요청은 다 허용
                     //authorizeRequests.requestMatchers("/**").hasAnyRole("ADMIN", "USER");
                 })
-                .formLogin((formLogin) -> {
-                    formLogin.loginPage("/login"); // 권한이 필요한 요청은 로그인 화면으로 리다이렉트
-                })
+
                 .build();
     }
 
