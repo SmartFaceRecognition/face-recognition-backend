@@ -41,6 +41,7 @@ public class SecurityConfig{
                     authorizeRequests.requestMatchers("/worker/**").hasRole("ADMIN");
 //                    authorizeRequests.requestMatchers("/guest/**").hasRole("ADMIN");
 //                    authorizeRequests.requestMatchers("/worker/{id}").hasRole("WORKER");
+//                    authorizeRequests.requestMatchers("/signup").hasRole("ADMIN");
                     authorizeRequests.anyRequest().permitAll(); // 그 외의 요청은 다 허용
                 })
 
