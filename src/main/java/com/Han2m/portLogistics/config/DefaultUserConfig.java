@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.config;
 
-import com.Han2m.portLogistics.admin.entitiy.Account;
-import com.Han2m.portLogistics.admin.repository.AccountRepository;
+import com.Han2m.portLogistics.admin.entitiy.Member;
+import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -14,19 +14,19 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class DefaultUserConfig {
 
-    private final AccountRepository accountRepository;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
     CommandLineRunner initDefaultUser() {
         return args -> {
-            if (accountRepository.findById("ADMIN").isEmpty()) {
-                Account account = Account.builder()
-                        .id("test1")
+            if (memberRepository.findByMemberId("ADMIN").isEmpty()) {
+                Member member = Member.builder()
+                        .memberId("test111")
                         .password(passwordEncoder.encode("1234"))
-                        .roles(Collections.singletonList("ADMIN"))
+//                        .roles(Collections.singletonList("ADMIN"))
                         .build();
-                accountRepository.save(account);
+                memberRepository.save(member);
             }
         };
     }
