@@ -19,18 +19,18 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account implements UserDetails {
+public class Member implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long accountKey;
-    private String id;  //요렇게....db에 매핑할 이름
-    private String password;  //요렇게....db에 매핑할 이름
+    @Column(updatable = false, unique = true, nullable = false)
+    private String memberId;
+    @Column(nullable = false)
+    private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;  //요렇게....db에 매핑할 이름
+//    @Builder.Default
+    private List<String> roles;
 
-    //admin employee
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
@@ -40,29 +40,24 @@ public class Account implements UserDetails {
 
     @Override
     public String getUsername() {
-        return id; //반환 값은 db결과값이
+        return memberId;
     }
-
     @Override
     public String getPassword() {
-        return password; //반환 값은 db결과값이 나오도록
+        return password;
     }
-
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
-
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
     @Override
     public boolean isEnabled() {
         return true;

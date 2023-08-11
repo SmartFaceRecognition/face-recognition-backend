@@ -1,51 +1,38 @@
 package com.Han2m.portLogistics.config;
 
-import com.Han2m.portLogistics.admin.service.SecurityService;
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @EnableWebSecurity
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig{
 
-    private final JwtTokenProvider jwtTokenProvider;
 
+    // security 6.1 최신버전으로 문법을 조금 다르게 사용해야함.
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                //url 권한 설정
-                .authorizeHttpRequests(request -> request
-                        .anyRequest().permitAll()
-                );
-
-        http.formLogin(AbstractHttpConfigurer::disable);
-
-        //세션 로그인 사용 안함
-        http.sessionManagement((httpSecuritySessionManagementConfigurer ->
-                httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
-
-        //jwtTokenFilter 사용함
-        http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-
-
-        //#5.csrf 설정을 off 합니다.
-        http.csrf((AbstractHttpConfigurer::disable));
-        return http.build();
+        return http
+                .csrf(AbstractHttpConfigurer::disable) // 서버에 저장하지 않아서 csrf 공격에 대한 옵션은 꺼둔다.
+                .authorizeHttpRequests((authorizeRequests) -> {
+                    // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문
+//                    authorizeRequests.requestMatchers("/login").permitAll();
+                    authorizeRequests.anyRequest().permitAll(); // 그 외의 요청은 다 허용
+                    //authorizeRequests.requestMatchers("/**").hasAnyRole("ADMIN", "USER");
+                })
+                .formLogin((formLogin) -> {
+                    formLogin.loginPage("/login"); // 권한이 필요한 요청은 로그인 화면으로 리다이렉트
+                })
+                .build();
     }
 
 
