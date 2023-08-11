@@ -15,7 +15,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig{
+
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     // security 6.1 최신버전으로 문법을 조금 다르게 사용해야함.
@@ -31,10 +34,13 @@ public class SecurityConfig{
                 .authorizeHttpRequests((authorizeRequests) -> {
                     // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문
 //                    authorizeRequests.requestMatchers("/login").permitAll();
-                    authorizeRequests.requestMatchers("/worker/**").hasAnyRole("ADMIN");
+                    authorizeRequests.requestMatchers("/worker/**").hasRole("ADMIN");
                     authorizeRequests.anyRequest().permitAll(); // 그 외의 요청은 다 허용
                 })
 
+                // JwtAuthenticationFilter를 먼저 적용
+                //  -->> jwt token을 사용하기 위함, 이후 postman으로 할 땐 token을 넣어서 실행
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
