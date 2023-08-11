@@ -70,8 +70,6 @@ public class WorkerService {
 
         worker.setWorkerWharfList(workerWharves);
         workerRepository.save(worker);
-
-        workerRepository.save(worker);
         return worker;
     }
 

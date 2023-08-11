@@ -46,9 +46,9 @@ public class StatusService {
 
     public ResStatusDto registerWorkerOut(Long id, Long wharfId){
 
-        Status status = statusRepository.findLastStatusWithNullOutTimeByWharfAndWorker(id,wharfId);
+        Status status = statusRepository.findLastStatusWithNullOutTimeByWharfAndWorker(wharfId,id);
 
-        // 입장 시간 (현재 시간)
+        // 퇴장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
         status.setOutTime(currentTime);
