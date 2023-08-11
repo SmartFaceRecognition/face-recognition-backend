@@ -32,9 +32,15 @@ public class SecurityConfig{
                 .sessionManagement((httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)))
                 .authorizeHttpRequests((authorizeRequests) -> {
-                    // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문
-//                    authorizeRequests.requestMatchers("/login").permitAll();
+
+                    /**
+                     * 1) ROLE_ 은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_ 이 붙기 때문
+                     * 2) ADMIN과 WORKER 로 나누어서, 등록은 ADMIN만 되고 WORKER는 조회만 되게끔 설정하기
+                    **/
+
                     authorizeRequests.requestMatchers("/worker/**").hasRole("ADMIN");
+//                    authorizeRequests.requestMatchers("/guest/**").hasRole("ADMIN");
+//                    authorizeRequests.requestMatchers("/worker/{id}").hasRole("WORKER");
                     authorizeRequests.anyRequest().permitAll(); // 그 외의 요청은 다 허용
                 })
 
