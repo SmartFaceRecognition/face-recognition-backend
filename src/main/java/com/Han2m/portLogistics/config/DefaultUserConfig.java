@@ -25,7 +25,7 @@ public class DefaultUserConfig {
                 Member member = Member.builder()
                         .memberId("test111")
                         .password(passwordEncoder.encode("1234"))
-                        .roles(Collections.singletonList("USER"))
+                        .roles(Collections.singletonList("ADMIN"))
                         .build();
                 memberRepository.save(member);
             }

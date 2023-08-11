@@ -31,8 +31,8 @@ public class SecurityConfig{
                 .authorizeHttpRequests((authorizeRequests) -> {
                     // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문
 //                    authorizeRequests.requestMatchers("/login").permitAll();
+                    authorizeRequests.requestMatchers("/worker/**").hasAnyRole("ADMIN");
                     authorizeRequests.anyRequest().permitAll(); // 그 외의 요청은 다 허용
-                    //authorizeRequests.requestMatchers("/**").hasAnyRole("ADMIN", "USER");
                 })
 
                 .build();
