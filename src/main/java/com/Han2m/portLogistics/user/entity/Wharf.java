@@ -1,7 +1,6 @@
 package com.Han2m.portLogistics.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +20,7 @@ public class Wharf {
     public String place;
 
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
-    private List<WorkerWharf> workerWharfList = new ArrayList<>();
+    private List<PersonWharf> PersonWharfList = new ArrayList<>();
 
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();

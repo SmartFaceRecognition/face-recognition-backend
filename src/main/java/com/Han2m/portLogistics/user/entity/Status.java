@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @Entity
@@ -25,7 +24,7 @@ public class Status {
     private Wharf wharf;
 
     @ManyToOne
-    @JoinColumn(name = "workerId")
-    private Worker worker;
+    @JoinColumn(name = "personId")
+    private Person person;
 
 }

@@ -1,7 +1,6 @@
 package com.Han2m.portLogistics.user.controller;
 
 
-import com.Han2m.portLogistics.response.SuccessBody;
 import com.Han2m.portLogistics.user.dto.res.ResStatusDto;
 import com.Han2m.portLogistics.user.service.StatusService;
 import lombok.RequiredArgsConstructor;

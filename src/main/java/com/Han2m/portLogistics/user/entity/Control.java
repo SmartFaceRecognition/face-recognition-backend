@@ -17,7 +17,7 @@ public class Control {
     private String closeTime;
 
     @ManyToOne
-    @JoinColumn(name = "worker_id")
+    @JoinColumn(name = "workerId")
     private Worker worker;
 
 }

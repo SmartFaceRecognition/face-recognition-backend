@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.Han2m.portLogistics.response.ResBody.notFoundResponse;
 import static com.Han2m.portLogistics.response.ResBody.successResponse;
 
 @RestController
@@ -20,9 +19,6 @@ public class ArduinoController {
     @PostMapping("/worker/{id}/fingerprint")
     public ResponseEntity<Object> callArduino(@PathVariable Long id){
 
-        if(workerService.workerIsPresent(id)){
-            return notFoundResponse("해당 직원이 존재하지 않습니다");
-        }
         //아두이노에게 id 데이터를 주면서 요청
         return successResponse();
     }

@@ -1,14 +1,15 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.user.dto.req.ReqRegisterFingerPrintDto;
+import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
+import com.Han2m.portLogistics.user.entity.PersonWharf;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
-import com.Han2m.portLogistics.user.entity.WorkerWharf;
+import com.Han2m.portLogistics.user.repository.PersonRepository;
+import com.Han2m.portLogistics.user.repository.PersonWharfRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
-import com.Han2m.portLogistics.user.repository.WorkerWharfRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -31,20 +31,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkerService {
 
+    private final PersonRepository personRepository;
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
-    private final WorkerWharfRepository workerWharfRepository;
+    private final PersonWharfRepository personWharfRepository;
 
-    //id 조회
-    public boolean workerIsPresent(Long id) {
-        return workerRepository.findById(id).isEmpty();
-    }
 
 
     // Worker 조회
     public ResWorkerDto getWorkerById(Long id) {
 
-        Worker worker = workerRepository.findById(id).get();
+        Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         return new ResWorkerDto(worker);
     }
@@ -61,21 +58,21 @@ public class WorkerService {
         worker.setPhone(reqWorkerDto.getPhone());
         worker.setPosition(reqWorkerDto.getPosition());
 
-        List<WorkerWharf> workerWharves = worker.getWorkerWharfList();
+        List<PersonWharf> workerWharves = worker.getPersonWharfList();
 
         for (String place : reqWorkerDto.getWharfs()) {
             Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new WorkerWharf(worker, wharf));
+            workerWharves.add(new PersonWharf(worker, wharf));
         }
 
-        worker.setWorkerWharfList(workerWharves);
-        workerRepository.save(worker);
+        worker.setPersonWharfList(workerWharves);
+        personRepository.save(worker);
         return worker;
     }
 
     public Worker editWorkerInfo(Long id, ReqWorkerDto reqWorkerDto) {
 
-        Worker worker = workerRepository.findById(id).get();
+        Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         worker.setNationality(reqWorkerDto.getNationality());
         worker.setName(reqWorkerDto.getName());
@@ -85,19 +82,19 @@ public class WorkerService {
         worker.setPosition(reqWorkerDto.getPosition());
 
         //기존 정보 삭제
-        for (WorkerWharf workerWharf : worker.getWorkerWharfList()) {
-            workerWharfRepository.deleteById(workerWharf.getWorkerWharfId());
+        for (PersonWharf PersonWharf : worker.getPersonWharfList()) {
+            personWharfRepository.deleteById(PersonWharf.getPersonWharfId());
         }
-        worker.setWorkerWharfList(new ArrayList<>());
+        worker.setPersonWharfList(new ArrayList<>());
 
-        List<WorkerWharf> workerWharves = worker.getWorkerWharfList();
+        List<PersonWharf> workerWharves = worker.getPersonWharfList();
 
         for (String place : reqWorkerDto.getWharfs()) {
             Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new WorkerWharf(worker, wharf));
+            workerWharves.add(new PersonWharf(worker, wharf));
         }
 
-        worker.setWorkerWharfList(workerWharves);
+        worker.setPersonWharfList(workerWharves);
 
 
         workerRepository.save(worker);
@@ -130,7 +127,10 @@ public class WorkerService {
 
     // 인원 삭제
     public void deleteWorker(Long id) {
-        workerRepository.deleteById(id);
+        workerRepository.findById(id).map(worker -> {
+            workerRepository.delete(worker);
+            return worker;
+        }).orElseThrow(EntityNotFoundException::new);
     }
 
 

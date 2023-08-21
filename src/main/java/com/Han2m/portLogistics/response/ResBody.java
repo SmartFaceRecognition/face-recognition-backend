@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.response;
 
+import com.Han2m.portLogistics.exception.ErrorBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -14,8 +15,5 @@ public class ResBody {
         return ResponseEntity.ok(successBody);
     }
 
-    public static ResponseEntity<Object> notFoundResponse(String message) {
-        ErrorBody errorBody = new ErrorBody(message);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
-    }
+
 }

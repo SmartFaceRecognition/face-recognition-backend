@@ -1,11 +1,15 @@
 package com.Han2m.portLogistics.user.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -14,25 +18,16 @@ import java.util.stream.Collectors;
 @DiscriminatorValue("worker")
 public class Worker extends Person{
 
-    private String faceUrl;
+    //소속된 회사
+    private String company;
+    //직급
+    private String position;
 
-    private String position; // 직급
-
+    //담당하고 있는 외부인
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
-    private List<Status> statusList = new ArrayList<>();
+    private List<Guest> guests = new ArrayList<>();
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
     private List<Control> controlList = new ArrayList<>();
-
-    // 여기 상속관계를 추가해야될 수도 있음
-    @OneToMany(mappedBy = "worker", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<WorkerWharf> workerWharfList = new ArrayList<>();
-
-    public List<String> getWharfPlaces() {
-        return workerWharfList.stream()
-                .map(WorkerWharf::getWharf)
-                .map(Wharf::getPlace)
-                .collect(Collectors.toList());
-    }
 
 }

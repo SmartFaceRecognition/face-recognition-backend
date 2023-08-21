@@ -1,14 +1,14 @@
 package com.Han2m.portLogistics.user.service;
 
 
+import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.res.ResStatusDto;
-import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
+import com.Han2m.portLogistics.user.entity.Person;
 import com.Han2m.portLogistics.user.entity.Status;
 import com.Han2m.portLogistics.user.entity.Wharf;
-import com.Han2m.portLogistics.user.entity.Worker;
+import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.StatusRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
-import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,19 +23,19 @@ import java.util.stream.Collectors;
 public class StatusService {
 
     private final StatusRepository statusRepository;
-    private final WorkerRepository workerRepository;
+    private final PersonRepository personRepository;
     private final WharfRepository wharfRepository;
 
     public ResStatusDto registerWorkerEnter(Long id, Long wharfId){
-        Worker worker = workerRepository.findById(id).get();
-        Wharf wharf = wharfRepository.findById(wharfId).get();
+        Person person = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(EntityNotFoundException::new);
 
         // 입장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
         Status status = new Status();
 
-        status.setWorker(worker);
+        status.setPerson(person);
         status.setEnterTime(currentTime);
         status.setWharf(wharf);
 
@@ -46,7 +46,7 @@ public class StatusService {
 
     public ResStatusDto registerWorkerOut(Long id, Long wharfId){
 
-        Status status = statusRepository.findLastStatusWithNullOutTimeByWharfAndWorker(wharfId,id);
+        Status status = statusRepository.findLastStatusWithNullOutTimeByWharfAndPerson(wharfId,id);
 
         // 퇴장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());

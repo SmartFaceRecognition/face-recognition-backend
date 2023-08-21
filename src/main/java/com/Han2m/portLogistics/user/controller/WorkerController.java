@@ -10,13 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.Han2m.portLogistics.response.ResBody.notFoundResponse;
 import static com.Han2m.portLogistics.response.ResBody.successResponse;
 
 @RestController
@@ -31,10 +31,6 @@ public class WorkerController {
     @GetMapping("/worker/{id}")
     public ResponseEntity<Object> getWorkerById(@PathVariable Long id) {
 
-        if(workerService.workerIsPresent(id)){
-            return notFoundResponse("해당 직원이 존재하지 않습니다");
-        }
-
         ResWorkerDto resWorkerDto = workerService.getWorkerById(id);
         return successResponse(resWorkerDto);
     }
@@ -43,7 +39,7 @@ public class WorkerController {
     //Worker 등록
     @PostMapping("/worker/register")
     public ResponseEntity<Object> registerWorker(@RequestParam MultipartFile faceImg,
-                                                      @RequestPart ReqWorkerDto reqWorkerDto)throws IOException {
+                                                      @RequestPart @Validated ReqWorkerDto reqWorkerDto)throws IOException {
 
         Worker worker = workerService.registerWorker(reqWorkerDto);
 
@@ -59,11 +55,7 @@ public class WorkerController {
     //Worker 수정
     @PutMapping("/worker/{id}")
     public ResponseEntity<Object> updateWorker(@PathVariable Long id,@RequestParam MultipartFile faceImg,
-                                                     @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
-
-        if(workerService.workerIsPresent(id)){
-            return notFoundResponse("해당 직원이 존재하지 않습니다");
-        }
+                                                     @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
 
         Worker worker = workerService.editWorkerInfo(id,reqWorkerDto);
 
@@ -78,10 +70,6 @@ public class WorkerController {
     //Worker 삭제
     @DeleteMapping("/worker/{id}")
     public ResponseEntity<Object> deleteWorkerById(@PathVariable Long id) {
-
-        if(workerService.workerIsPresent(id)){
-            return notFoundResponse("해당 직원이 존재하지 않습니다");
-        }
 
         workerService.deleteWorker(id);
 
@@ -103,19 +91,5 @@ public class WorkerController {
         List<ResWorkerDto> workers = workerService.searchWorkerByName(name);
         return successResponse(workers);
     }
-
-//    // 부두내 모든 직원 조회
-//    @GetMapping("/worker/wharf")
-//    public ResponseEntity<Object> searchAllWorkersInWharf() {
-//      //  Integer numPersons = workerService.getTotalPersonByWharfName(wharfName);
-//        //return ResponseEntity.ok();
-//    }
-//
-//    // 부두별 직원 조회
-//    @GetMapping("/worker/wharf/{wharfName}")
-//    public ResponseEntity<Object> searchAllWorkersInWharfByWharf(@PathVariable String wharfName) {
-//       // List<ReqWorkerDto> currentPerson = wharfService.getCurrentWorkerByWharf(wharfName);
-//        // return ResponseEntity.ok(currentPerson);
-//    }
 
 }
