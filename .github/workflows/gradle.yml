@@ -15,7 +15,7 @@ on:
 
 env:
   AWS_REGION: us-east-2
-  AWS_S3_BUCKET: gitbub-action-code
+  AWS_S3_BUCKET: github-action-code
   AWS_CODE_DEPLOY_APPLICATION: githubaction
   AWS_CODE_DEPLOY_GROUP: github-action
 
