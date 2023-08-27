@@ -46,10 +46,6 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
-    private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
-
-
 
 
     // Worker 조회
@@ -68,8 +64,10 @@ public class WorkerService {
         worker.setNationality(reqWorkerDto.getNationality());
         worker.setName(reqWorkerDto.getName());
         worker.setSex(reqWorkerDto.getSex());
+        worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
+        worker.setFaceUrl(reqWorkerDto.getFaceUrl());
         worker.setPosition(reqWorkerDto.getPosition());
 
         List<PersonWharf> workerWharves = worker.getPersonWharfList();
@@ -91,8 +89,10 @@ public class WorkerService {
         worker.setNationality(reqWorkerDto.getNationality());
         worker.setName(reqWorkerDto.getName());
         worker.setSex(reqWorkerDto.getSex());
+        worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
+        worker.setFaceUrl(reqWorkerDto.getFaceUrl());
         worker.setPosition(reqWorkerDto.getPosition());
 
         //기존 정보 삭제
@@ -124,39 +124,6 @@ public class WorkerService {
 
         return new ResWorkerDto(worker);
     }
-
-    public ResSignupDto applyDefaultAccountToMyAccount(ReqSignupDto reqSignupDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentMemberId = auth.getName();
-
-        Optional<Member> memberOptional = memberRepository.findByMemberId(currentMemberId);
-        if(!memberOptional.isPresent()) {
-            throw new RuntimeException("해당 멤버가 없습니다.");
-        }
-
-        // 현재 로그인된 정보 가져오기
-        Member currentMember = memberOptional.get();
-
-        log.info("Before Change - MemberId: {}, Password: {}", currentMember.getMemberId(), currentMember.getPassword());
-
-        Signup newSignup = new Signup();
-        newSignup.updateInfo(reqSignupDto.getMemberId(), passwordEncoder.encode(reqSignupDto.getPassword()));
-
-        Worker newWorker = new Worker();
-        newWorker.setSignup(newSignup);
-        newSignup.setWorker(newWorker);
-
-        workerRepository.save(newWorker);
-
-        // 기존 계정 삭제
-        memberRepository.delete(currentMember);
-
-        log.info("After Change - MemberId: {}, Password: {}", newSignup.getMemberId(), newSignup.getPassword());
-
-        // 08.27.) db에 저장 자체는 암호화 해서 되고, postman에서 결과값 반환은 비밀번호가 그대로 노출 됨.
-        return new ResSignupDto(newSignup.getMemberId(), newSignup.getPassword());
-    }
-
 
     public void sendDataToApi(String id,String faceurl){
 

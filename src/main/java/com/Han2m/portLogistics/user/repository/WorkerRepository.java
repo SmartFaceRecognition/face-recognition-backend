@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     List<Worker> findByName(String name);
-    Optional<Worker> findBySignupMemberId(String username);
+    Optional<Worker> findBySignupMemberId(String memberId);
 
 }
