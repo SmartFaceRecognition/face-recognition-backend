@@ -27,31 +27,8 @@ public class Member{
     private String memberId;
     @Column(nullable = false)
     private String password;
-    private String nationality;
-    private String name;
-    private Boolean sex;
-    private String birth;
-    private String phone;
-    private String faceUrl;
-    private String company;
-    private String position;
-
-    public void updateInfo(String memberId, String newpassword, String nationality, String name, Boolean sex, String birth, String phone, String faceUrl, String company, String position) {
-        this.memberId = memberId;
-        this.password = newpassword;
-        this.nationality = nationality;
-        this.name = name;
-        this.sex = sex;
-        this.birth = birth;
-        this.phone = phone;
-        this.faceUrl = faceUrl;
-        this.company = company;
-        this.position = position;
-    }
-
 
     @ElementCollection(fetch = FetchType.EAGER)
 //    @Builder.Default
     private List<String> roles;
-
 }
