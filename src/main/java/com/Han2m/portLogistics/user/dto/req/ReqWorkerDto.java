@@ -26,6 +26,8 @@ public class ReqWorkerDto {
     @NotBlank(message = "phone은 필수값 입니다")
     @Size(min = 11,max = 11,message = "핸드폰 번호는 11자리 입니다")
     private String phone;
+    @NotBlank(message = "사진 등록은 필수입니다")
+    private String faceUrl;
     @NotBlank(message = "position은 필수값 입니다")
     private String position;
     @NotNull(message = "wharfs은 필수값 입니다")

@@ -1,9 +1,14 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.admin.entitiy.Member;
+import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
+import com.Han2m.portLogistics.user.dto.req.ReqSignupDto;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
+import com.Han2m.portLogistics.user.dto.res.ResSignupDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.PersonWharf;
+import com.Han2m.portLogistics.user.entity.Signup;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
 import com.Han2m.portLogistics.user.repository.PersonRepository;
@@ -12,20 +17,26 @@ import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,6 +46,9 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
 
 
@@ -106,10 +120,43 @@ public class WorkerService {
     public ResWorkerDto registerWorkerUrl(Worker worker, String faceUrl) {
 
         worker.setFaceUrl(faceUrl);
-        sendDataToApi(worker.getPersonId().toString(),faceUrl);
+//        sendDataToApi(worker.getPersonId().toString(),faceUrl);
 
         return new ResWorkerDto(worker);
     }
+
+    public ResSignupDto applyDefaultAccountToMyAccount(ReqSignupDto reqSignupDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentMemberId = auth.getName();
+
+        Optional<Member> memberOptional = memberRepository.findByMemberId(currentMemberId);
+        if(!memberOptional.isPresent()) {
+            throw new RuntimeException("해당 멤버가 없습니다.");
+        }
+
+        // 현재 로그인된 정보 가져오기
+        Member currentMember = memberOptional.get();
+
+        log.info("Before Change - MemberId: {}, Password: {}", currentMember.getMemberId(), currentMember.getPassword());
+
+        Signup newSignup = new Signup();
+        newSignup.updateInfo(reqSignupDto.getMemberId(), passwordEncoder.encode(reqSignupDto.getPassword()));
+
+        Worker newWorker = new Worker();
+        newWorker.setSignup(newSignup);
+        newSignup.setWorker(newWorker);
+
+        workerRepository.save(newWorker);
+
+        // 기존 계정 삭제
+        memberRepository.delete(currentMember);
+
+        log.info("After Change - MemberId: {}, Password: {}", newSignup.getMemberId(), newSignup.getPassword());
+
+        // 08.27.) db에 저장 자체는 암호화 해서 되고, postman에서 결과값 반환은 비밀번호가 그대로 노출 됨.
+        return new ResSignupDto(newSignup.getMemberId(), newSignup.getPassword());
+    }
+
 
     public void sendDataToApi(String id,String faceurl){
 
