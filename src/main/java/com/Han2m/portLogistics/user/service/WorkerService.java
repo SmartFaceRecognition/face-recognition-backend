@@ -1,14 +1,9 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.admin.entitiy.Member;
-import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
-import com.Han2m.portLogistics.user.dto.req.ReqSignupDto;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
-import com.Han2m.portLogistics.user.dto.res.ResSignupDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.PersonWharf;
-import com.Han2m.portLogistics.user.entity.Signup;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
 import com.Han2m.portLogistics.user.repository.PersonRepository;
@@ -20,19 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -67,7 +54,6 @@ public class WorkerService {
         worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
-        worker.setFaceUrl(reqWorkerDto.getFaceUrl());
         worker.setPosition(reqWorkerDto.getPosition());
 
         List<PersonWharf> workerWharves = worker.getPersonWharfList();
@@ -92,7 +78,6 @@ public class WorkerService {
         worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
-        worker.setFaceUrl(reqWorkerDto.getFaceUrl());
         worker.setPosition(reqWorkerDto.getPosition());
 
         //기존 정보 삭제
@@ -120,24 +105,10 @@ public class WorkerService {
     public ResWorkerDto registerWorkerUrl(Worker worker, String faceUrl) {
 
         worker.setFaceUrl(faceUrl);
-//        sendDataToApi(worker.getPersonId().toString(),faceUrl);
-
+        workerRepository.save(worker);
         return new ResWorkerDto(worker);
     }
 
-    public void sendDataToApi(String id,String faceurl){
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String apiUrl = "http://127.0.0.1:5000/face"; // 대상 API의 URL
-        String jsonBody = "{\"id\": \"" + id + "\", \"url\": \"" + faceurl + "\"}"; // 올바른 JSON 데이터 형식
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
-        restTemplate.postForEntity(apiUrl, requestEntity, String.class);
-    }
 
     // 인원 삭제
     public void deleteWorker(Long id) {
