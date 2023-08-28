@@ -22,10 +22,10 @@ public class ReqGuestDto{
     @NotNull(message = "sex은 필수값 입니다")
     private Boolean sex;
     @NotBlank(message = "birth은 필수값 입니다")
-    @Size(min = 8,max = 8,message = "생년월일은 8자리 입니다")
+    @Size(min = 8,max = 8,message = "생년월일은 8자리 입니다") // ex. 19990101
     private String birth;
     @NotBlank(message = "phone은 필수값 입니다")
-    @Size(min = 11,max = 11,message = "핸드폰 번호는 11자리 입니다")
+    @Size(min = 11,max = 11,message = "핸드폰 번호는 11자리 입니다") // ex. 01012345678
     private String phone;
     @NotNull(message = "date는 필수값 입니다")
     private LocalDate date;

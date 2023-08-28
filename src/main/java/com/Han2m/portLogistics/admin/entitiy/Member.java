@@ -31,6 +31,4 @@ public class Member{
     @ElementCollection(fetch = FetchType.EAGER)
 //    @Builder.Default
     private List<String> roles;
-
-
 }

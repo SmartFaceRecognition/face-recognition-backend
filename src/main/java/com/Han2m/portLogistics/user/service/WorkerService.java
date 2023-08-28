@@ -4,6 +4,7 @@ import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.PersonWharf;
+import com.Han2m.portLogistics.user.entity.Signup;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
 import com.Han2m.portLogistics.user.repository.PersonRepository;
@@ -12,20 +13,21 @@ import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,7 +37,6 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
-
 
 
     // Worker 조회
@@ -48,28 +49,40 @@ public class WorkerService {
 
     // Worker 등록
     public Worker registerWorker(ReqWorkerDto reqWorkerDto) {
+        // 현재 로그인된 사용자의 정보 가져오기
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentMemberId = auth.getName();
 
-        Worker worker = new Worker();
-
-        worker.setNationality(reqWorkerDto.getNationality());
-        worker.setName(reqWorkerDto.getName());
-        worker.setSex(reqWorkerDto.getSex());
-        worker.setBirth(reqWorkerDto.getBirth());
-        worker.setPhone(reqWorkerDto.getPhone());
-        worker.setPosition(reqWorkerDto.getPosition());
-
-        List<PersonWharf> workerWharves = worker.getPersonWharfList();
-
-        for (String place : reqWorkerDto.getWharfs()) {
-            Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new PersonWharf(worker, wharf));
+        // 현재 로그인된 사용자의 Worker 엔티티 가져오기
+        Optional<Worker> workerOptional = workerRepository.findBySignupMemberId(currentMemberId);
+        if (!workerOptional.isPresent()) {
+            throw new RuntimeException("현재 로그인된 사용자의 정보를 찾을 수 없습니다.");
         }
 
-        worker.setPersonWharfList(workerWharves);
-        personRepository.save(worker);
-        return worker;
+        Worker currentWorker = workerOptional.get();
+
+        currentWorker.setNationality(reqWorkerDto.getNationality());
+        currentWorker.setName(reqWorkerDto.getName());
+        currentWorker.setSex(reqWorkerDto.getSex());
+        currentWorker.setCompany(reqWorkerDto.getCompany());
+        currentWorker.setBirth(reqWorkerDto.getBirth());
+        currentWorker.setPhone(reqWorkerDto.getPhone());
+        currentWorker.setPosition(reqWorkerDto.getPosition());
+
+        List<PersonWharf> workerWharves = new ArrayList<>();
+        for (String place : reqWorkerDto.getWharfs()) {
+            Wharf wharf = wharfRepository.findByPlace(place).get(0);
+            workerWharves.add(new PersonWharf(currentWorker, wharf));
+        }
+        currentWorker.setPersonWharfList(workerWharves);
+
+        personRepository.save(currentWorker);
+
+        return currentWorker;
     }
 
+
+    // Worker 수정
     public Worker editWorkerInfo(Long id, ReqWorkerDto reqWorkerDto) {
 
         Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -77,6 +90,7 @@ public class WorkerService {
         worker.setNationality(reqWorkerDto.getNationality());
         worker.setName(reqWorkerDto.getName());
         worker.setSex(reqWorkerDto.getSex());
+        worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
         worker.setPosition(reqWorkerDto.getPosition());
@@ -102,28 +116,15 @@ public class WorkerService {
         return worker;
     }
 
+
     //url 저장
     public ResWorkerDto registerWorkerUrl(Worker worker, String faceUrl) {
 
         worker.setFaceUrl(faceUrl);
-        sendDataToApi(worker.getPersonId().toString(),faceUrl);
-
+        workerRepository.save(worker);
         return new ResWorkerDto(worker);
     }
 
-    public void sendDataToApi(String id,String faceurl){
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String apiUrl = "http://127.0.0.1:5000/face"; // 대상 API의 URL
-        String jsonBody = "{\"id\": \"" + id + "\", \"url\": \"" + faceurl + "\"}"; // 올바른 JSON 데이터 형식
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
-        restTemplate.postForEntity(apiUrl, requestEntity, String.class);
-    }
 
     // 인원 삭제
     public void deleteWorker(Long id) {

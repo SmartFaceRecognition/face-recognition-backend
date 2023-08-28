@@ -1,9 +1,6 @@
 package com.Han2m.portLogistics.user.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +19,11 @@ public class Worker extends Person{
     private String company;
     //직급
     private String position;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "signup_id")
+    private Signup signup;
+
 
     //담당하고 있는 외부인
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)

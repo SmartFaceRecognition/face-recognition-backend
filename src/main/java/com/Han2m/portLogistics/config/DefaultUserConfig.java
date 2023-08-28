@@ -19,16 +19,23 @@ public class DefaultUserConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    CommandLineRunner initDefaultUser() {
+    CommandLineRunner initDefaultUsers() {
         return args -> {
-            if (memberRepository.findByMemberId("ADMIN").isEmpty()) {
-                Member member = Member.builder()
-                        .memberId("test111")
-                        .password(passwordEncoder.encode("1234"))
-                        .roles(Collections.singletonList("ADMIN"))
-                        .build();
-                memberRepository.save(member);
-            }
+            createDefaultUser("ADMIN1", "admin1", "ADMIN");
+            createDefaultUser("ADMIN2", "admin2", "ADMIN");
+            createDefaultUser("WORKER1", "worker1", "WORKER");
+            createDefaultUser("WORKER2", "worker2", "WORKER");
         };
+    }
+
+    private void createDefaultUser(String memberId, String password, String role) {
+        if (memberRepository.findByMemberId(memberId).isEmpty()) {
+            Member member = Member.builder()
+                    .memberId(memberId)
+                    .password(passwordEncoder.encode(password))
+                    .roles(Collections.singletonList(role))
+                    .build();
+            memberRepository.save(member);
+        }
     }
 }

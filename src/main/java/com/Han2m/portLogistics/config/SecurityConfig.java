@@ -37,7 +37,12 @@ public class SecurityConfig{
                      * 2) ADMIN과 WORKER 로 나누어서, 등록은 ADMIN만 되고 WORKER는 조회만 되게끔 설정하기
                     **/
 
-                  //  authorizeRequests.requestMatchers("/worker/**").hasRole("ADMIN");
+//                    authorizeRequests.requestMatchers("/signup/admin").hasRole("ADMIN");
+//                    authorizeRequests.requestMatchers("/signup/worker").hasRole("WORKER");
+//                    authorizeRequests.requestMatchers("/worker/**").hasAnyRole("ADMIN", "WORKER");
+//                    authorizeRequests.requestMatchers("/guest/**").hasRole("ADMIN");
+
+                    //  authorizeRequests.requestMatchers("/worker/**").hasRole("ADMIN");
 //                    authorizeRequests.requestMatchers("/guest/**").hasRole("ADMIN");
 //                    authorizeRequests.requestMatchers("/worker/{id}").hasRole("WORKER");
 //                    authorizeRequests.requestMatchers("/signup").hasRole("ADMIN");
