@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.repository;
 
+import com.Han2m.portLogistics.user.entity.Signup;
 import com.Han2m.portLogistics.user.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,5 +12,4 @@ import java.util.Optional;
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     List<Worker> findByName(String name);
     Optional<Worker> findBySignupMemberId(String memberId);
-
 }
