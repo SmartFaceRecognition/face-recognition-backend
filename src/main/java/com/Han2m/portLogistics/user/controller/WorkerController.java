@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.controller;
 
+import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.Worker;
@@ -39,9 +40,10 @@ public class WorkerController {
     //Worker 등록
     @PostMapping("/worker/register")
     public ResponseEntity<Object> registerWorker(@RequestParam MultipartFile faceImg,
-                                                      @RequestPart @Validated ReqWorkerDto reqWorkerDto)throws IOException {
+                                                      @RequestPart @Validated ReqWorkerDto reqWorkerDto,
+                                                 @RequestPart @Validated LoginRequestDto loginRequestDto)throws IOException {
 
-        Worker worker = workerService.registerWorker(reqWorkerDto);
+        Worker worker = workerService.registerWorker(reqWorkerDto, loginRequestDto);
 
         //얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());

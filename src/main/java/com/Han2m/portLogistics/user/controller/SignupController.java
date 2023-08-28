@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.user.controller;
 
-import com.Han2m.portLogistics.user.dto.req.ReqSignupDto;
+import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
 import com.Han2m.portLogistics.user.service.SignupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +15,8 @@ public class SignupController {
     private final SignupService signupService;
 
     @PutMapping("/applyDefaultAccount")
-    public ResponseEntity<Object> applyDefaultAccountToMyAccount(@RequestBody ReqSignupDto reqSignupDto) {
-        signupService.applyDefaultAccountToMyAccount(reqSignupDto);
-        return successResponse(reqSignupDto);
+    public ResponseEntity<Object> applyDefaultAccountToMyAccount(@RequestBody LoginRequestDto loginRequestDto) {
+        signupService.applyDefaultAccountToMyAccount(loginRequestDto);
+        return successResponse(loginRequestDto);
     }
 }

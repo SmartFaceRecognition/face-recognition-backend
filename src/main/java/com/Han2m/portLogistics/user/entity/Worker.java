@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.entity;
 
+import com.Han2m.portLogistics.admin.entitiy.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,8 @@ public class Worker extends Person{
     //직급
     private String position;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "signup_id")
-    private Signup signup;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Member member;
 
 
     //담당하고 있는 외부인

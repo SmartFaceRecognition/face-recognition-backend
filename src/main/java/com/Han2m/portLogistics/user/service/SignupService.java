@@ -1,24 +1,22 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
 import com.Han2m.portLogistics.admin.entitiy.Member;
 import com.Han2m.portLogistics.admin.repository.MemberRepository;
-import com.Han2m.portLogistics.user.dto.req.ReqSignupDto;
-import com.Han2m.portLogistics.user.dto.res.ResSignupDto;
-import com.Han2m.portLogistics.user.entity.Signup;
-import com.Han2m.portLogistics.user.entity.Worker;
-import com.Han2m.portLogistics.user.repository.PersonRepository;
-import com.Han2m.portLogistics.user.repository.PersonWharfRepository;
-import com.Han2m.portLogistics.user.repository.WharfRepository;
-import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,11 +24,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SignupService {
 
-    private final WorkerRepository workerRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ResSignupDto applyDefaultAccountToMyAccount(ReqSignupDto reqSignupDto) {
+    public LoginRequestDto applyDefaultAccountToMyAccount(LoginRequestDto loginRequestDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentMemberId = auth.getName();
 
@@ -40,31 +37,27 @@ public class SignupService {
         }
 
         // 아이디 중복 확인
-        Optional<Worker> existingWorkerOptional = workerRepository.findBySignupMemberId(reqSignupDto.getMemberId());
-        if(existingWorkerOptional.isPresent()) {
+        Optional<Member> existingMemberOptional = memberRepository.findByMemberId(loginRequestDto.getMemberId());
+        if(existingMemberOptional.isPresent()) {
             throw new RuntimeException("이미 사용 중인 아이디입니다.");
         }
 
         // 현재 로그인된 정보 가져오기
         Member currentMember = memberOptional.get();
 
+        // Before
         log.info("Before Change - MemberId: {}, Password: {}", currentMember.getMemberId(), currentMember.getPassword());
 
-        Signup newSignup = new Signup();
-        newSignup.updateInfo(reqSignupDto.getMemberId(), passwordEncoder.encode(reqSignupDto.getPassword()));
+        // 현재 로그인된 멤버의 정보 변경
+        currentMember.updateInfo(loginRequestDto.getMemberId(), passwordEncoder.encode(loginRequestDto.getPassword()));
 
-        Worker newWorker = new Worker();
-        newWorker.setSignup(newSignup);
-        newSignup.setWorker(newWorker);
+        // Authentication 정보 업데이트
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(currentMember.getMemberId(), currentMember.getPassword(), auth.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-        workerRepository.save(newWorker);
+        // After
+        log.info("After Change - MemberId: {}, Password: {}", currentMember.getMemberId(), currentMember.getPassword());
 
-        // 기존 계정 삭제
-        memberRepository.delete(currentMember);
-
-        log.info("After Change - MemberId: {}, Password: {}", newSignup.getMemberId(), newSignup.getPassword());
-
-        // 08.27.) db에 저장 자체는 암호화 해서 되고, postman에서 결과값 반환은 비밀번호가 그대로 노출 됨.
-        return new ResSignupDto(newSignup.getMemberId(), newSignup.getPassword());
+        return new LoginRequestDto(currentMember.getMemberId(), currentMember.getPassword());
     }
 }
