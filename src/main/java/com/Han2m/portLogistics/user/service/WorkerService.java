@@ -39,7 +39,6 @@ public class WorkerService {
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
     private final MemberRepository memberRepository;
-    private final SignupService signupService;
 
 
     // Worker 조회
@@ -51,28 +50,22 @@ public class WorkerService {
     }
 
     // Worker 등록
-    public Worker registerWorker(ReqWorkerDto reqWorkerDto, LoginRequestDto loginRequestDto) {
-        signupService.applyDefaultAccountToMyAccount(loginRequestDto);
+    public Worker registerWorker(ReqWorkerDto reqWorkerDto, String targetMemberId) {
 
-        // 현재 로그인된 사용자의 정보 가져오기
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentMemberId = auth.getName();
-
-        // 현재 로그인된 사용자의 멤버 엔티티 가져오기
-        Optional<Member> memberOptional = memberRepository.findByMemberId(currentMemberId);
+        Optional<Member> memberOptional = memberRepository.findByMemberId(targetMemberId);
         if (!memberOptional.isPresent()) {
-            throw new RuntimeException("현재 로그인된 사용자의 정보를 찾을 수 없습니다.");
+            throw new RuntimeException("원하는 memberId에 해당하는 사용자의 정보를 찾을 수 없습니다.");
         }
 
-        Member currentMember = memberOptional.get();
+        Member targetMember = memberOptional.get();
         Worker currentWorker;
 
-        // Member에 연결된 Worker 정보 가져오기
-        if (currentMember.getWorker() != null) {
-            currentWorker = currentMember.getWorker();
+        // Member에 연결된 Worker 정보가 있는지 확인
+        if (targetMember.getWorker() != null) {
+            currentWorker = targetMember.getWorker();
         } else {
             currentWorker = new Worker();
-            currentWorker.setMember(currentMember);
+            currentWorker.setMember(targetMember);
         }
 
         currentWorker.setNationality(reqWorkerDto.getNationality());
@@ -90,7 +83,6 @@ public class WorkerService {
         }
         currentWorker.setPersonWharfList(workerWharves);
 
-        memberRepository.save(currentMember);
         workerRepository.save(currentWorker);
 
         return currentWorker;
@@ -99,9 +91,14 @@ public class WorkerService {
 
 
     // Worker 수정
-    public Worker editWorkerInfo(Long id, ReqWorkerDto reqWorkerDto) {
+    public Worker editWorkerInfo(String memberId, ReqWorkerDto reqWorkerDto) {
 
-        Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(EntityNotFoundException::new);
+        Worker worker = member.getWorker();
+
+        if(worker == null) {
+            throw new RuntimeException("Worker not found for the given memberId.");
+        }
 
         // Worker의 정보 수정
         worker.setNationality(reqWorkerDto.getNationality());

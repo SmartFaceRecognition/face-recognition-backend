@@ -38,12 +38,12 @@ public class WorkerController {
 
 
     //Worker 등록
-    @PostMapping("/worker/register")
+    @PostMapping("/worker/register/{memberId}")
     public ResponseEntity<Object> registerWorker(@RequestParam MultipartFile faceImg,
                                                       @RequestPart @Validated ReqWorkerDto reqWorkerDto,
-                                                 @RequestPart @Validated LoginRequestDto loginRequestDto)throws IOException {
+                                                 @PathVariable String memberId)throws IOException {
 
-        Worker worker = workerService.registerWorker(reqWorkerDto, loginRequestDto);
+        Worker worker = workerService.registerWorker(reqWorkerDto, memberId);
 
         //얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());
@@ -55,16 +55,16 @@ public class WorkerController {
 
 
     //Worker 수정
-    @PutMapping("/worker/{id}")
-    public ResponseEntity<Object> updateWorker(@PathVariable Long id,@RequestParam MultipartFile faceImg,
-                                                     @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
+    @PutMapping("/worker/{memberId}")
+    public ResponseEntity<Object> updateWorker(@PathVariable String memberId, @RequestParam MultipartFile faceImg,
+                                               @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = workerService.editWorkerInfo(id,reqWorkerDto);
+        Worker worker = workerService.editWorkerInfo(memberId, reqWorkerDto);
 
-        //얼굴 이미지 s3에 저장
-        String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());
+        // 얼굴 이미지 s3에 저장
+        String faceUrl = s3Service.uploadFaceImg(faceImg, worker.getPersonId());
 
-        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl);
+        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker, faceUrl);
 
         return successResponse(resWorkerDto);
     }
