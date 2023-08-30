@@ -1,6 +1,5 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
 import com.Han2m.portLogistics.admin.entitiy.Member;
 import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
@@ -9,7 +8,6 @@ import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.PersonWharf;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
-import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.PersonWharfRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
@@ -50,22 +48,22 @@ public class WorkerService {
     }
 
     // Worker 등록
-    public Worker registerWorker(ReqWorkerDto reqWorkerDto, String targetMemberId) {
+    public Worker registerWorker(ReqWorkerDto reqWorkerDto) {
+        // 현재 로그인한 사용자의 인증 정보 가져오기
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentMemberId = auth.getName(); // 이 부분은 memberId로 바뀌어야 할 수도 있습니다.
 
-        Optional<Member> memberOptional = memberRepository.findByMemberId(targetMemberId);
+        Optional<Member> memberOptional = memberRepository.findByMemberId(currentMemberId);
         if (!memberOptional.isPresent()) {
-            throw new RuntimeException("원하는 memberId에 해당하는 사용자의 정보를 찾을 수 없습니다.");
+            throw new RuntimeException("현재 로그인한 사용자의 정보를 찾을 수 없습니다.");
         }
 
-        Member targetMember = memberOptional.get();
-        Worker currentWorker;
+        Member currentMember = memberOptional.get();
+        Worker currentWorker = currentMember.getWorker();
 
-        // Member에 연결된 Worker 정보가 있는지 확인
-        if (targetMember.getWorker() != null) {
-            currentWorker = targetMember.getWorker();
-        } else {
+        if (currentWorker == null) {
             currentWorker = new Worker();
-            currentWorker.setMember(targetMember);
+            currentWorker.setMember(currentMember);
         }
 
         currentWorker.setNationality(reqWorkerDto.getNationality());
@@ -91,14 +89,13 @@ public class WorkerService {
 
 
     // Worker 수정
-    public Worker editWorkerInfo(String memberId, ReqWorkerDto reqWorkerDto) {
-
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(EntityNotFoundException::new);
-        Worker worker = member.getWorker();
-
-        if(worker == null) {
-            throw new RuntimeException("Worker not found for the given memberId.");
+    public Worker editWorkerInfo(Long workerId, ReqWorkerDto reqWorkerDto) {
+        Optional<Worker> workerOptional = workerRepository.findById(workerId);
+        if (!workerOptional.isPresent()) {
+            throw new EntityNotFoundException();
         }
+
+        Worker worker = workerOptional.get();
 
         // Worker의 정보 수정
         worker.setNationality(reqWorkerDto.getNationality());
@@ -129,6 +126,13 @@ public class WorkerService {
         return worker;
     }
 
+    // 인원 삭제
+    public void deleteWorker(Long id) {
+        if (!workerRepository.existsById(id)) {
+            throw new EntityNotFoundException();
+        }
+        workerRepository.deleteById(id);
+    }
 
 
     //url 저장
@@ -137,12 +141,6 @@ public class WorkerService {
         worker.setFaceUrl(faceUrl);
         workerRepository.save(worker);
         return new ResWorkerDto(worker);
-    }
-
-
-    // 인원 삭제
-    public void deleteWorker(Long id) {
-        workerRepository.deleteById(id);
     }
 
 

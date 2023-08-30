@@ -36,16 +36,14 @@ public class WorkerController {
         return successResponse(resWorkerDto);
     }
 
-
     //Worker 등록
-    @PostMapping("/worker/register/{memberId}")
+    @PostMapping("/worker/register")
     public ResponseEntity<Object> registerWorker(@RequestParam MultipartFile faceImg,
-                                                      @RequestPart @Validated ReqWorkerDto reqWorkerDto,
-                                                 @PathVariable String memberId)throws IOException {
+                                                 @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = workerService.registerWorker(reqWorkerDto, memberId);
+        Worker worker = workerService.registerWorker(reqWorkerDto);
 
-        //얼굴 이미지 s3에 저장
+        // 얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());
 
         ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl);
@@ -54,12 +52,12 @@ public class WorkerController {
     }
 
 
-    //Worker 수정
-    @PutMapping("/worker/{memberId}")
-    public ResponseEntity<Object> updateWorker(@PathVariable String memberId, @RequestParam MultipartFile faceImg,
+    // Worker 수정
+    @PutMapping("/worker/edit/{id}")
+    public ResponseEntity<Object> updateWorker(@PathVariable Long id, @RequestParam MultipartFile faceImg,
                                                @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = workerService.editWorkerInfo(memberId, reqWorkerDto);
+        Worker worker = workerService.editWorkerInfo(id, reqWorkerDto);
 
         // 얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg, worker.getPersonId());
@@ -69,12 +67,11 @@ public class WorkerController {
         return successResponse(resWorkerDto);
     }
 
+
     //Worker 삭제
     @DeleteMapping("/worker/{id}")
     public ResponseEntity<Object> deleteWorkerById(@PathVariable Long id) {
-
         workerService.deleteWorker(id);
-
         return successResponse();
     }
 
