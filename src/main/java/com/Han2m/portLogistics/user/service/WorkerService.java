@@ -48,17 +48,12 @@ public class WorkerService {
     }
 
     // Worker 등록
-    public Worker registerWorker(ReqWorkerDto reqWorkerDto) {
-        // 현재 로그인한 사용자의 인증 정보 가져오기
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentMemberId = auth.getName(); // 이 부분은 memberId로 바뀌어야 할 수도 있습니다.
+    public Worker registerWorker(ReqWorkerDto reqWorkerDto, Long memberId) {
 
-        Optional<Member> memberOptional = memberRepository.findByMemberId(currentMemberId);
-        if (!memberOptional.isPresent()) {
-            throw new RuntimeException("현재 로그인한 사용자의 정보를 찾을 수 없습니다.");
-        }
+        // memberId로 Member 엔터티를 조회. 여기서의 memberId는 PK값인 id를 의미함.
+        Member currentMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("해당 ID를 가진 회원을 찾을 수 없습니다."));
 
-        Member currentMember = memberOptional.get();
         Worker currentWorker = currentMember.getWorker();
 
         if (currentWorker == null) {
@@ -79,6 +74,7 @@ public class WorkerService {
             Wharf wharf = wharfRepository.findByPlace(place).get(0);
             workerWharves.add(new PersonWharf(currentWorker, wharf));
         }
+
         currentWorker.setPersonWharfList(workerWharves);
 
         workerRepository.save(currentWorker);
