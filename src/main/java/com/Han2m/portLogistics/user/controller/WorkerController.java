@@ -37,12 +37,11 @@ public class WorkerController {
     }
 
     //Worker 등록
-    @PostMapping("/worker/register/{id}")
-    public ResponseEntity<Object> registerWorker(@PathVariable Long id,
-                                                 @RequestParam MultipartFile faceImg,
+    @PostMapping("/worker/register")
+    public ResponseEntity<Object> registerWorker(@RequestParam MultipartFile faceImg,
                                                  @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = workerService.registerWorker(reqWorkerDto, id);
+        Worker worker = workerService.registerWorker(reqWorkerDto);
 
         // 얼굴 이미지 s3에 저장
         String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());

@@ -48,38 +48,27 @@ public class WorkerService {
     }
 
     // Worker 등록
-    public Worker registerWorker(ReqWorkerDto reqWorkerDto, Long memberId) {
+    public Worker registerWorker(ReqWorkerDto reqWorkerDto) {
 
-        // memberId로 Member 엔터티를 조회. 여기서의 memberId는 PK값인 id를 의미함.
-        Member currentMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("해당 ID를 가진 회원을 찾을 수 없습니다."));
+        Worker worker = new Worker();
 
-        Worker currentWorker = currentMember.getWorker();
+        worker.setNationality(reqWorkerDto.getNationality());
+        worker.setName(reqWorkerDto.getName());
+        worker.setSex(reqWorkerDto.getSex());
+        worker.setBirth(reqWorkerDto.getBirth());
+        worker.setPhone(reqWorkerDto.getPhone());
+        worker.setPosition(reqWorkerDto.getPosition());
 
-        if (currentWorker == null) {
-            currentWorker = new Worker();
-            currentWorker.setMember(currentMember);
-        }
+        List<PersonWharf> workerWharves = worker.getPersonWharfList();
 
-        currentWorker.setNationality(reqWorkerDto.getNationality());
-        currentWorker.setName(reqWorkerDto.getName());
-        currentWorker.setSex(reqWorkerDto.getSex());
-        currentWorker.setCompany(reqWorkerDto.getCompany());
-        currentWorker.setBirth(reqWorkerDto.getBirth());
-        currentWorker.setPhone(reqWorkerDto.getPhone());
-        currentWorker.setPosition(reqWorkerDto.getPosition());
-
-        List<PersonWharf> workerWharves = new ArrayList<>();
         for (String place : reqWorkerDto.getWharfs()) {
             Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new PersonWharf(currentWorker, wharf));
+            workerWharves.add(new PersonWharf(worker, wharf));
         }
 
-        currentWorker.setPersonWharfList(workerWharves);
-
-        workerRepository.save(currentWorker);
-
-        return currentWorker;
+        worker.setPersonWharfList(workerWharves);
+        workerRepository.save(worker);
+        return worker;
     }
 
 

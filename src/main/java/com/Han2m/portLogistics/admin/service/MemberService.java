@@ -6,6 +6,7 @@ import com.Han2m.portLogistics.admin.entitiy.Member;
 import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.entity.Worker;
+import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,15 +26,22 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final WorkerRepository workerRepository;
 
     // id, pw, role 받아서 관리자가 회원가입을 시키는 것.
-    public void addUser(UserRequestDto userRequestDto) {
+    public void addUser(Long workerId, UserRequestDto userRequestDto) {  // workerId 인자 추가
         if (memberRepository.findByMemberId(userRequestDto.getMemberId()).isEmpty()) {
             Member member = Member.builder()
                     .memberId(userRequestDto.getMemberId())
                     .password(passwordEncoder.encode(userRequestDto.getPassword()))
                     .roles(userRequestDto.getRoles())
                     .build();
+
+            Worker worker = workerRepository.findById(workerId)
+                    .orElseThrow(() -> new EntityNotFoundException());
+            member.setWorker(worker);
+            worker.setMember(member);
+
             memberRepository.save(member);
         } else {
             throw new RuntimeException("ID 중복입니다.");

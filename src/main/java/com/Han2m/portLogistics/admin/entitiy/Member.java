@@ -2,15 +2,14 @@ package com.Han2m.portLogistics.admin.entitiy;
 
 import com.Han2m.portLogistics.user.entity.Worker;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
