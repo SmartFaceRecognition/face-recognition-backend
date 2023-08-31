@@ -57,6 +57,7 @@ public class WorkerService {
         worker.setSex(reqWorkerDto.getSex());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
+        worker.setCompany(reqWorkerDto.getCompany());
         worker.setPosition(reqWorkerDto.getPosition());
 
         List<PersonWharf> workerWharves = worker.getPersonWharfList();

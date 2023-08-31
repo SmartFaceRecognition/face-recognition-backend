@@ -37,8 +37,7 @@ public class MemberService {
                     .roles(userRequestDto.getRoles())
                     .build();
 
-            Worker worker = workerRepository.findById(workerId)
-                    .orElseThrow(() -> new EntityNotFoundException());
+            Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new EntityNotFoundException());
             member.setWorker(worker);
             worker.setMember(member);
 
@@ -47,6 +46,7 @@ public class MemberService {
             throw new RuntimeException("ID 중복입니다.");
         }
     }
+
 
 
     // 계정을 바꾸면, 재로그인을 필수적으로 시켜야함 !!
