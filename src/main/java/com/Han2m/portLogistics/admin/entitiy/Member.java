@@ -1,34 +1,36 @@
 package com.Han2m.portLogistics.admin.entitiy;
 
+import com.Han2m.portLogistics.user.entity.Worker;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.*;
 
-import javax.management.relation.Role;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member{
 
     @Id
-    @Column(updatable = false, unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String memberId;
-    @Column(nullable = false)
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
 //    @Builder.Default
     private List<String> roles;
+
+    public void updateInfo(String memberId, String password) {
+        this.memberId = memberId;
+        this.password = password;
+    }
+
+    @OneToOne(mappedBy = "member")
+    private Worker worker;
+
 }

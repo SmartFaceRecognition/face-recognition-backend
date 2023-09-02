@@ -1,13 +1,13 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.admin.entitiy.Member;
+import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.entity.PersonWharf;
-import com.Han2m.portLogistics.user.entity.Signup;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
-import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.PersonWharfRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkerService {
 
-    private final PersonRepository personRepository;
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
+    private final MemberRepository memberRepository;
 
 
     // Worker 조회
@@ -49,57 +49,16 @@ public class WorkerService {
 
     // Worker 등록
     public Worker registerWorker(ReqWorkerDto reqWorkerDto) {
-        // 현재 로그인된 사용자의 정보 가져오기
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentMemberId = auth.getName();
 
-        // 현재 로그인된 사용자의 Worker 엔티티 가져오기
-        Optional<Worker> workerOptional = workerRepository.findBySignupMemberId(currentMemberId);
-        if (!workerOptional.isPresent()) {
-            throw new RuntimeException("현재 로그인된 사용자의 정보를 찾을 수 없습니다.");
-        }
-
-        Worker currentWorker = workerOptional.get();
-
-        currentWorker.setNationality(reqWorkerDto.getNationality());
-        currentWorker.setName(reqWorkerDto.getName());
-        currentWorker.setSex(reqWorkerDto.getSex());
-        currentWorker.setCompany(reqWorkerDto.getCompany());
-        currentWorker.setBirth(reqWorkerDto.getBirth());
-        currentWorker.setPhone(reqWorkerDto.getPhone());
-        currentWorker.setPosition(reqWorkerDto.getPosition());
-
-        List<PersonWharf> workerWharves = new ArrayList<>();
-        for (String place : reqWorkerDto.getWharfs()) {
-            Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new PersonWharf(currentWorker, wharf));
-        }
-        currentWorker.setPersonWharfList(workerWharves);
-
-        personRepository.save(currentWorker);
-
-        return currentWorker;
-    }
-
-
-    // Worker 수정
-    public Worker editWorkerInfo(Long id, ReqWorkerDto reqWorkerDto) {
-
-        Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Worker worker = new Worker();
 
         worker.setNationality(reqWorkerDto.getNationality());
         worker.setName(reqWorkerDto.getName());
         worker.setSex(reqWorkerDto.getSex());
-        worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
+        worker.setCompany(reqWorkerDto.getCompany());
         worker.setPosition(reqWorkerDto.getPosition());
-
-        //기존 정보 삭제
-        for (PersonWharf PersonWharf : worker.getPersonWharfList()) {
-            personWharfRepository.deleteById(PersonWharf.getPersonWharfId());
-        }
-        worker.setPersonWharfList(new ArrayList<>());
 
         List<PersonWharf> workerWharves = worker.getPersonWharfList();
 
@@ -109,11 +68,56 @@ public class WorkerService {
         }
 
         worker.setPersonWharfList(workerWharves);
+        workerRepository.save(worker);
+        return worker;
+    }
 
 
+
+    // Worker 수정
+    public Worker editWorkerInfo(Long workerId, ReqWorkerDto reqWorkerDto) {
+        Optional<Worker> workerOptional = workerRepository.findById(workerId);
+        if (!workerOptional.isPresent()) {
+            throw new EntityNotFoundException();
+        }
+
+        Worker worker = workerOptional.get();
+
+        // Worker의 정보 수정
+        worker.setNationality(reqWorkerDto.getNationality());
+        worker.setName(reqWorkerDto.getName());
+        worker.setSex(reqWorkerDto.getSex());
+        worker.setCompany(reqWorkerDto.getCompany());
+        worker.setBirth(reqWorkerDto.getBirth());
+        worker.setPhone(reqWorkerDto.getPhone());
+        worker.setPosition(reqWorkerDto.getPosition());
+
+        // 기존의 PersonWharf 정보 삭제
+        for (PersonWharf personWharf : worker.getPersonWharfList()) {
+            personWharfRepository.deleteById(personWharf.getPersonWharfId());
+        }
+        worker.setPersonWharfList(new ArrayList<>());
+
+        // 새로운 Wharf 정보 바탕으로 PersonWharf 리스트 생성
+        List<PersonWharf> workerWharves = new ArrayList<>();
+        for (String place : reqWorkerDto.getWharfs()) {
+            Wharf wharf = wharfRepository.findByPlace(place).get(0);
+            workerWharves.add(new PersonWharf(worker, wharf));
+        }
+        worker.setPersonWharfList(workerWharves);
+
+        // 변경된 Worker 저장
         workerRepository.save(worker);
 
         return worker;
+    }
+
+    // 인원 삭제
+    public void deleteWorker(Long id) {
+        if (!workerRepository.existsById(id)) {
+            throw new EntityNotFoundException();
+        }
+        workerRepository.deleteById(id);
     }
 
 
@@ -123,15 +127,6 @@ public class WorkerService {
         worker.setFaceUrl(faceUrl);
         workerRepository.save(worker);
         return new ResWorkerDto(worker);
-    }
-
-
-    // 인원 삭제
-    public void deleteWorker(Long id) {
-        workerRepository.findById(id).map(worker -> {
-            workerRepository.delete(worker);
-            return worker;
-        }).orElseThrow(EntityNotFoundException::new);
     }
 
 

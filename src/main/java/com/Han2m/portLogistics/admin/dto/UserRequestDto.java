@@ -1,12 +1,12 @@
 package com.Han2m.portLogistics.admin.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@AllArgsConstructor
-public class LoginRequestDto {
+public class UserRequestDto {
     private String memberId;
     private String password;
-
+    private List<String> roles;
 }

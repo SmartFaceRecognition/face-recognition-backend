@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -15,6 +14,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class DefaultUserConfig {
 
+    // 기능 테스트 편의를 위해 남겨둠. 실제 서비스 때는 파일 자체를 삭제해도 상관 없는 부분.
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
