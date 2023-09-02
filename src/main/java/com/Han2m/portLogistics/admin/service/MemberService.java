@@ -1,6 +1,7 @@
 package com.Han2m.portLogistics.admin.service;
 
 import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
+import com.Han2m.portLogistics.admin.dto.LoginResponseDto;
 import com.Han2m.portLogistics.admin.dto.UserRequestDto;
 import com.Han2m.portLogistics.admin.entitiy.Member;
 import com.Han2m.portLogistics.admin.repository.MemberRepository;
@@ -9,14 +10,11 @@ import com.Han2m.portLogistics.user.entity.Worker;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,49 +35,32 @@ public class MemberService {
                     .roles(userRequestDto.getRoles())
                     .build();
 
-            Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new EntityNotFoundException());
+            Worker worker = workerRepository.findById(workerId).orElseThrow(EntityNotFoundException::new);
             member.setWorker(worker);
             worker.setMember(member);
 
             memberRepository.save(member);
         } else {
-            throw new RuntimeException("ID 중복입니다.");
+            throw new RuntimeException("해당 아이디는 이미 존재합니다.");
         }
     }
 
 
 
     // 계정을 바꾸면, 재로그인을 필수적으로 시켜야함 !!
-    public LoginRequestDto editAccount(LoginRequestDto loginRequestDto) {
+    public LoginResponseDto editAccount(LoginRequestDto loginRequestDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentMemberId = auth.getName();
 
-        Optional<Member> memberOptional = memberRepository.findByMemberId(currentMemberId);
-        if(!memberOptional.isPresent()) {
-            throw new RuntimeException("해당 멤버가 없습니다.");
-        }
         // 아이디 중복 확인
-        Optional<Member> existingMemberOptional = memberRepository.findByMemberId(loginRequestDto.getMemberId());
-        if(existingMemberOptional.isPresent()) {
-            throw new RuntimeException("이미 사용 중인 아이디입니다.");
-        }
+        memberRepository.findByMemberId(loginRequestDto.getMemberId()).orElseThrow(() -> new RuntimeException("해당 아이디는 이미 존재합니다."));
 
         // 현재 로그인된 정보 가져오기
-        Member currentMember = memberOptional.get();
-
-        // Before 확인용
-        log.info("Before Change - MemberId: {}, Password: {}", currentMember.getMemberId(), currentMember.getPassword());
+        Member member= memberRepository.findByMemberId(currentMemberId).orElseThrow(EntityNotFoundException::new);
 
         // 현재 로그인된 멤버의 정보 변경
-        currentMember.updateInfo(loginRequestDto.getMemberId(), passwordEncoder.encode(loginRequestDto.getPassword()));
+        member.updateInfo(loginRequestDto.getMemberId(), passwordEncoder.encode(loginRequestDto.getPassword()));
 
-        // Authentication 정보 업데이트
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(currentMember.getMemberId(), currentMember.getPassword(), auth.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-        // After 확인용
-        log.info("After Change - MemberId: {}, Password: {}", currentMember.getMemberId(), currentMember.getPassword());
-
-        return new LoginRequestDto(currentMember.getMemberId(), currentMember.getPassword());
+        return new LoginResponseDto(member.getMemberId(), member.getPassword());
     }
 }

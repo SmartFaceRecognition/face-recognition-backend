@@ -17,7 +17,7 @@ public class AdminController {
 
     private final MemberService memberService;
 
-    @PostMapping("/admin/addUser/{workerId}")
+    @PostMapping("/worker/{workerId}/account")
     public ResponseEntity<Object> addUser(@PathVariable Long workerId,
                                           @RequestBody UserRequestDto userRequestDto) {
         memberService.addUser(workerId, userRequestDto);

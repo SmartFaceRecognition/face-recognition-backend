@@ -32,6 +32,7 @@ public class JwtTokenProvider {
 
     // JWT 토큰 생성
     public TokenDto generateToken(Authentication authentication) {
+
             // 권한 가져오기
             String authorities = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
@@ -47,16 +48,9 @@ public class JwtTokenProvider {
                     .signWith(key, SignatureAlgorithm.HS256)
                     .compact();
 
-            // Refresh Token 생성
-            String refreshToken = Jwts.builder()
-                    .setExpiration(new Date(now + 86400000))
-                    .signWith(key, SignatureAlgorithm.HS256)
-                    .compact();
-
             return TokenDto.builder()
                     .grantType("Bearer")
                     .accessToken(accessToken)
-                    .refreshToken(refreshToken)
                     .build();
     }
 

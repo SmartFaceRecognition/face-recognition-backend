@@ -1,7 +1,6 @@
 package com.Han2m.portLogistics.admin.service;
 
 import com.Han2m.portLogistics.admin.dto.TokenDto;
-import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.config.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LoginService {
 
-    private final MemberRepository memberRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public TokenDto login(String memberId, String password) {
+
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, password);
