@@ -37,7 +37,7 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           touch ./src/main/resources/application.yml
-          echo "${{ env.APPLICATION }}" > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
 
       - name: gradlew 권한 설정
         run: chmod +x gradlew
