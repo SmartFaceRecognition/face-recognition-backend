@@ -1,6 +1,5 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.admin.entitiy.Member;
 import com.Han2m.portLogistics.admin.repository.MemberRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
@@ -16,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +54,6 @@ public class WorkerService {
         worker.setSex(reqWorkerDto.getSex());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
-        worker.setCompany(reqWorkerDto.getCompany());
         worker.setPosition(reqWorkerDto.getPosition());
 
         List<PersonWharf> workerWharves = worker.getPersonWharfList();
@@ -87,7 +83,6 @@ public class WorkerService {
         worker.setNationality(reqWorkerDto.getNationality());
         worker.setName(reqWorkerDto.getName());
         worker.setSex(reqWorkerDto.getSex());
-        worker.setCompany(reqWorkerDto.getCompany());
         worker.setBirth(reqWorkerDto.getBirth());
         worker.setPhone(reqWorkerDto.getPhone());
         worker.setPosition(reqWorkerDto.getPosition());
@@ -144,11 +139,9 @@ public class WorkerService {
     // 테스트용 랜덤부두, 인스턴스 생성시 아래 메소드 자동 호출
     @PostConstruct
     public void createTestWharfs() {
-        Wharf wharf1 = new Wharf(1L, "1wharf");
-        Wharf wharf2 = new Wharf(2L, "2wharf");
-        Wharf wharf3 = new Wharf(3L, "3wharf");
-        Wharf wharf4 = new Wharf(4L, "4wharf");
-        Wharf wharf5 = new Wharf(5L, "5wharf");
-        wharfRepository.saveAll(List.of(wharf1, wharf2, wharf3, wharf4, wharf5));
+        Wharf wharf1 = new Wharf(1L, "제 1 부두");
+        Wharf wharf2 = new Wharf(2L, "제 2 부두");
+        Wharf wharf3 = new Wharf(3L, "제 3 부두");
+        wharfRepository.saveAll(List.of(wharf1, wharf2, wharf3));
     }
 }

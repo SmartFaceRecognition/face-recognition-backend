@@ -18,8 +18,6 @@ public class ReqWorkerDto {
     private String name;
     @NotNull(message = "sex은 필수값 입니다")
     private Boolean sex;
-    @NotBlank(message = "company은 필수값 입니다")
-    private String company;
     @NotBlank(message = "birth은 필수값 입니다")
     @Size(min = 8,max = 8,message = "생년월일은 8자리 입니다")
     private String birth;

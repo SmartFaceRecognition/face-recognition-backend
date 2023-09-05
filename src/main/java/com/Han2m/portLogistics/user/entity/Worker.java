@@ -16,14 +16,11 @@ import java.util.List;
 @DiscriminatorValue("worker")
 public class Worker extends Person{
 
-    //소속된 회사
-    private String company;
     //직급
     private String position;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Member member;
-
 
     //담당하고 있는 외부인
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)

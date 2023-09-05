@@ -15,7 +15,6 @@ public class ResWorkerDto{
     private Boolean sex;
     private String birth;
     private String phone;
-    private String company;
     private Long personId;
     private String position;
     private String faceUrl;
@@ -29,7 +28,6 @@ public class ResWorkerDto{
         phone = worker.getPhone();
         personId = worker.getPersonId();
         position = worker.getPosition();
-        company = worker.getCompany();
         faceUrl = worker.getFaceUrl();
         wharfs = worker.getWharfPlaces();
     }
