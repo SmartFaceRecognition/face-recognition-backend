@@ -13,7 +13,7 @@ import static com.Han2m.portLogistics.response.ResBody.successResponse;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminController {
+public class SignupController {
 
     private final AccountService accountService;
 
