@@ -1,7 +1,6 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.admin.entitiy.Member;
-import com.Han2m.portLogistics.admin.repository.MemberRepository;
+import com.Han2m.portLogistics.admin.repository.AccountRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
@@ -16,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +33,7 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
-    private final MemberRepository memberRepository;
+    private final AccountRepository accountRepository;
 
 
     // Worker 조회
