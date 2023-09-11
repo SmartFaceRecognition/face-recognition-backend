@@ -1,6 +1,7 @@
 package com.Han2m.portLogistics.config;
 
 import com.Han2m.portLogistics.admin.dto.TokenDto;
+import com.Han2m.portLogistics.exception.CustomExpiredJwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -40,7 +41,7 @@ public class JwtTokenProvider {
 
             long now = (new Date()).getTime();
             // Access Token 생성
-            Date accessTokenExpiresIn = new Date(now + 86400000); // 하루를 의미함
+            Date accessTokenExpiresIn = new Date(now + 30000); // 기존 : 86400000(하루), 토큰 만료 테스트를 위해 30초로 설정했음 09.08.금
             String accessToken = Jwts.builder()
                     .setSubject(authentication.getName())
                     .claim("auth", authorities)
@@ -83,7 +84,9 @@ public class JwtTokenProvider {
             log.info("Invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
+            throw new CustomExpiredJwtException("토큰이 만료되었습니다. 재로그인 해주십시오."); // 401 에러 뱉기 09.08.금
+        }
+        catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty.", e);

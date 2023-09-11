@@ -13,24 +13,24 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member{
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String memberId;
+    private String accountId;
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
 //    @Builder.Default
     private List<String> roles;
 
-    public void updateInfo(String memberId, String password) {
-        this.memberId = memberId;
+    public void updateInfo(String accountId, String password) {
+        this.accountId = accountId;
         this.password = password;
     }
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "account")
     private Worker worker;
 
 }

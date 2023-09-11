@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class UserRequestDto {
-    private String memberId;
+    private String accountId;
     private String password;
     private List<String> roles;
 }

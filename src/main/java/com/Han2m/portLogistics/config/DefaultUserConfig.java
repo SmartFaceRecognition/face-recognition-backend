@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.config;
 
-import com.Han2m.portLogistics.admin.entitiy.Member;
-import com.Han2m.portLogistics.admin.repository.MemberRepository;
+import com.Han2m.portLogistics.admin.entitiy.Account;
+import com.Han2m.portLogistics.admin.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ import java.util.Collections;
 public class DefaultUserConfig {
 
     // 기능 테스트 편의를 위해 남겨둠. 실제 서비스 때는 파일 자체를 삭제해도 상관 없는 부분.
-    private final MemberRepository memberRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
@@ -29,13 +29,13 @@ public class DefaultUserConfig {
     }
 
     private void createDefaultUser(String memberId, String password, String role) {
-        if (memberRepository.findByMemberId(memberId).isEmpty()) {
-            Member member = Member.builder()
-                    .memberId(memberId)
+        if (accountRepository.findByAccountId(memberId).isEmpty()) {
+            Account account = Account.builder()
+                    .accountId(memberId)
                     .password(passwordEncoder.encode(password))
                     .roles(Collections.singletonList(role))
                     .build();
-            memberRepository.save(member);
+            accountRepository.save(account);
         }
     }
 }
