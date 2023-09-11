@@ -1,6 +1,5 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.admin.repository.AccountRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
@@ -33,7 +32,6 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
     private final PersonWharfRepository personWharfRepository;
-    private final AccountRepository accountRepository;
 
 
     // Worker 조회

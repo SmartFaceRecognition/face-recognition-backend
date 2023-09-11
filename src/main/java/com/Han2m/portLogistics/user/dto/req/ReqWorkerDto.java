@@ -21,10 +21,10 @@ public class ReqWorkerDto {
     @NotBlank(message = "company은 필수값 입니다")
     private String company;
     @NotBlank(message = "birth은 필수값 입니다")
-    @Size(min = 8,max = 8,message = "생년월일은 8자리 입니다")
+    @Size(min = 10,max = 10,message = "생년월일은 8자리 입니다")
     private String birth;
     @NotBlank(message = "phone은 필수값 입니다")
-    @Size(min = 11,max = 11,message = "핸드폰 번호는 11자리 입니다")
+    @Size(min =14,max = 14,message = "핸드폰 번호는 11자리 입니다")
     private String phone;
     @NotBlank(message = "position은 필수값 입니다")
     private String position;
