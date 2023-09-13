@@ -52,7 +52,7 @@ public class S3Service {
             e.printStackTrace();
         }
 
-        return amazonS3.getUrl(bucket, "faceImg/"+key.toString()).toString();
+        return amazonS3.getUrl(bucket,s3ObjectName).toString();
     }
 
 }
