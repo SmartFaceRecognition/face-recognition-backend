@@ -59,12 +59,13 @@ public class StatusService {
     }
 
 
-
+    @Transactional(readOnly = true)
     public List<ResStatusDto> getAllWorkerInWharf(){
         List<Status> statuses = statusRepository.findByOutTimeIsNull();
         return statuses.stream().map(ResStatusDto::new).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ResStatusDto> getWorkerInWharf(Long wharfId){
         List<Status> statuses = statusRepository.findByOutTimeIsNullAndWharfWharfId(wharfId);
         return statuses.stream().map(ResStatusDto::new).collect(Collectors.toList());

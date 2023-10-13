@@ -89,6 +89,7 @@ public class GuestService {
         return new ResGuestDto(guest);
     }
 
+    @Transactional(readOnly = true)
     public ResGuestDto getGuestById(Long id) {
 
         Guest guest = guestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -103,11 +104,13 @@ public class GuestService {
          }).orElseThrow(EntityNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
     public Page<ResGuestDto> getAllGuests(Pageable pageable) {
         Page<Guest> guests = guestRepository.findAll(pageable);
         return guests.map(ResGuestDto::new);
     }
 
+    @Transactional(readOnly = true)
     public List<ResGuestDto> searchGuestByName(String name) {
         List<Guest> guests = guestRepository.findByName(name);
         return guests.stream().map(ResGuestDto::new).collect(Collectors.toList());

@@ -36,6 +36,7 @@ public class WorkerService {
 
 
     // Worker 조회
+    @Transactional(readOnly = true)
     public ResWorkerDto getWorkerById(Long id) {
 
         Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -123,12 +124,13 @@ public class WorkerService {
         return new ResWorkerDto(worker);
     }
 
-
+    @Transactional(readOnly = true)
     public Page<ResWorkerDto> getAllWorkers(Pageable pageable) {
         Page<Worker> workers = workerRepository.findAll(pageable);
         return workers.map(ResWorkerDto::new);
     }
 
+    @Transactional(readOnly = true)
     public List<ResWorkerDto> searchWorkerByName(String name) {
         List<Worker> workers = workerRepository.findByName(name);
         return workers.stream().map(ResWorkerDto::new).collect(Collectors.toList());
