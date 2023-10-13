@@ -17,9 +17,10 @@ public class LoginController {
 
     @PostMapping("/login")
     public TokenDto login(@RequestBody LoginRequestDto loginRequestDto) {
+
         String accountId = loginRequestDto.getAccountId();
         String password = loginRequestDto.getPassword();
-        TokenDto tokenDto = loginService.login(accountId, password);
-        return tokenDto;
+
+        return loginService.login(accountId, password);
     }
 }

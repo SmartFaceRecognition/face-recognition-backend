@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.Han2m.portLogistics.response.ResBody.successResponse;
-
 @RestController
 @RequiredArgsConstructor
 public class AccountEditController {
@@ -19,8 +17,8 @@ public class AccountEditController {
 
     // 계정 변경시 로그인 redirect 필수.
     @PutMapping("/account")
-    public ResponseEntity<Object> editAccount(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> editAccount(@RequestBody LoginRequestDto loginRequestDto) {
         LoginResponseDto loginResponseDto = accountService.editAccount(loginRequestDto);
-        return successResponse(loginResponseDto);
+        return ResponseEntity.ok(loginResponseDto);
     }
 }

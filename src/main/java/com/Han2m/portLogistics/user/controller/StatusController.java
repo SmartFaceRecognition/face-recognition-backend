@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.Han2m.portLogistics.response.ResBody.successResponse;
-
 @RestController
 @RequiredArgsConstructor
 public class StatusController {
@@ -22,21 +20,21 @@ public class StatusController {
 
     //들어온 시간 저장
     @PostMapping("/worker/{id}/enter/{wharfId}")
-    public ResponseEntity<Object> workerEnter(@PathVariable Long id,@PathVariable Long wharfId){
+    public ResponseEntity<ResStatusDto> workerEnter(@PathVariable Long id,@PathVariable Long wharfId){
         ResStatusDto resStatusDto = statusService.registerWorkerEnter(id, wharfId);
-        return successResponse(resStatusDto);
+        return ResponseEntity.ok(resStatusDto);
     }
 
     //퇴장시간 저장
     @PostMapping("/worker/{id}/out/{wharfId}")
-    public ResponseEntity<Object> workerOut(@PathVariable Long id,@PathVariable Long wharfId){
+    public ResponseEntity<ResStatusDto> workerOut(@PathVariable Long id,@PathVariable Long wharfId){
         ResStatusDto resStatusDto = statusService.registerWorkerOut(id, wharfId);
-        return successResponse(resStatusDto);
+        return ResponseEntity.ok(resStatusDto);
     }
 
     //부두내 인원 조회
     @GetMapping("/worker/wharf/{wharfId}")
-    public ResponseEntity<Object> workerInWharf(@PathVariable Long wharfId){
+    public ResponseEntity<List<ResStatusDto>> workerInWharf(@PathVariable Long wharfId){
 
         List<ResStatusDto> statues;
 
@@ -49,7 +47,7 @@ public class StatusController {
             statues = statusService.getWorkerInWharf(wharfId);
         }
 
-        return successResponse(statues);
+        return ResponseEntity.ok(statues);
     }
 
 }
