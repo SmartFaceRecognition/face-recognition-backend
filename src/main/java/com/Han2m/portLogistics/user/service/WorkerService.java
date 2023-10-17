@@ -4,23 +4,19 @@ package com.Han2m.portLogistics.user.service;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
-import com.Han2m.portLogistics.user.entity.PersonWharf;
 import com.Han2m.portLogistics.user.entity.Wharf;
 import com.Han2m.portLogistics.user.entity.Worker;
-import com.Han2m.portLogistics.user.repository.PersonWharfRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -30,111 +26,76 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkerService {
 
+    private final S3Service s3Service;
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
-    private final PersonWharfRepository personWharfRepository;
-
 
     // Worker 조회
     @Transactional(readOnly = true)
-    public ResWorkerDto getWorkerById(Long id) {
+    public ResWorkerDto getWorkerById(Long personId) {
 
-        Worker worker = workerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Worker worker = workerRepository.findById(personId).orElseThrow(EntityNotFoundException::new);
 
-        return new ResWorkerDto(worker);
+        return worker.toResWorkerDto();
     }
 
     // Worker 등록
-    public Worker registerWorker(ReqWorkerDto reqWorkerDto) {
+    public ResWorkerDto registerWorker(MultipartFile faceImg, ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = new Worker();
+        //Dto to entity
+        Worker worker = reqWorkerDto.toEntity();
+        worker.setWharfList(reqWorkerDto.getWharfs().stream().map(wharfRepository::findByName).collect(Collectors.toList()));
 
-        worker.setNationality(reqWorkerDto.getNationality());
-        worker.setName(reqWorkerDto.getName());
-        worker.setSex(reqWorkerDto.getSex());
-        worker.setBirth(reqWorkerDto.getBirth());
-        worker.setPhone(reqWorkerDto.getPhone());
-        worker.setPosition(reqWorkerDto.getPosition());
+        //worker 정보 DB에 저장
+        Worker savedWorker =  workerRepository.save(worker);
 
-        List<PersonWharf> workerWharves = worker.getPersonWharfList();
+        //저장한 worker의 Id 값을 가져와서 s3에 얼굴 이미지 저장
+        String faceImgUrl = s3Service.uploadFaceImg(faceImg,savedWorker.getPersonId());
 
-        for (String place : reqWorkerDto.getWharfs()) {
-            Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new PersonWharf(worker, wharf));
+        //worker 정보 수정(faceImgUrl 삽입)
+        savedWorker.setFaceUrl(faceImgUrl);
+        workerRepository.save(savedWorker);
+
+        return savedWorker.toResWorkerDto();
+    }
+
+    //Worker 수정
+    public ResWorkerDto editWorker(Long personId, MultipartFile faceImg, ReqWorkerDto reqWorkerDto) throws IOException {
+
+        Worker worker = workerRepository.findById(personId).orElseThrow(EntityNotFoundException::new);
+
+        //Worker의 정보 수정
+        if(reqWorkerDto.getWharfs() != null) {
+            worker.setWharfList(reqWorkerDto.getWharfs().stream().map(wharfRepository::findByName).collect(Collectors.toList()));
+        }
+        worker.updateWorker(reqWorkerDto);
+
+        //Worker의 이미지 수정
+        if(!faceImg.isEmpty()){
+            String faceImgUrl = s3Service.uploadFaceImg(faceImg,personId);
+            worker.setFaceUrl(faceImgUrl);
         }
 
-        worker.setPersonWharfList(workerWharves);
-        workerRepository.save(worker);
-        return worker;
+       return worker.toResWorkerDto();
+    }
+
+    // Worker 삭제
+    public void deleteWorker(Long personId) {
+        workerRepository.delete(workerRepository.findById(personId).orElseThrow(EntityNotFoundException::new));
     }
 
 
-
-    // Worker 수정
-    public Worker editWorkerInfo(Long workerId, ReqWorkerDto reqWorkerDto) {
-        Optional<Worker> workerOptional = workerRepository.findById(workerId);
-        if (!workerOptional.isPresent()) {
-            throw new EntityNotFoundException();
-        }
-
-        Worker worker = workerOptional.get();
-
-        // Worker의 정보 수정
-        worker.setNationality(reqWorkerDto.getNationality());
-        worker.setName(reqWorkerDto.getName());
-        worker.setSex(reqWorkerDto.getSex());
-        worker.setBirth(reqWorkerDto.getBirth());
-        worker.setPhone(reqWorkerDto.getPhone());
-        worker.setPosition(reqWorkerDto.getPosition());
-
-        // 기존의 PersonWharf 정보 삭제
-        for (PersonWharf personWharf : worker.getPersonWharfList()) {
-            personWharfRepository.deleteById(personWharf.getPersonWharfId());
-        }
-        worker.setPersonWharfList(new ArrayList<>());
-
-        // 새로운 Wharf 정보 바탕으로 PersonWharf 리스트 생성
-        List<PersonWharf> workerWharves = new ArrayList<>();
-        for (String place : reqWorkerDto.getWharfs()) {
-            Wharf wharf = wharfRepository.findByPlace(place).get(0);
-            workerWharves.add(new PersonWharf(worker, wharf));
-        }
-        worker.setPersonWharfList(workerWharves);
-
-        // 변경된 Worker 저장
-        workerRepository.save(worker);
-
-        return worker;
-    }
-
-    // 인원 삭제
-    public void deleteWorker(Long id) {
-        if (!workerRepository.existsById(id)) {
-            throw new EntityNotFoundException();
-        }
-        workerRepository.deleteById(id);
-    }
-
-
-    //url 저장
-    public ResWorkerDto registerWorkerUrl(Worker worker, String faceUrl) {
-
-        worker.setFaceUrl(faceUrl);
-        workerRepository.save(worker);
-        return new ResWorkerDto(worker);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<ResWorkerDto> getAllWorkers(Pageable pageable) {
-        Page<Worker> workers = workerRepository.findAll(pageable);
-        return workers.map(ResWorkerDto::new);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ResWorkerDto> searchWorkerByName(String name) {
-        List<Worker> workers = workerRepository.findByName(name);
-        return workers.stream().map(ResWorkerDto::new).collect(Collectors.toList());
-    }
+//    @Transactional(readOnly = true)
+//    public Page<ResWorkerDto> getAllWorkers(Pageable pageable) {
+//        Page<Worker> workers = workerRepository.findAll(pageable);
+//        return workers.map(ResWorkerDto::new);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<ResWorkerDto> searchWorkerByName(String name) {
+//        List<Worker> workers = workerRepository.findByName(name);
+//        return workers.stream().map(ResWorkerDto::new).collect(Collectors.toList());
+//    }
 
 
     // 테스트용 랜덤부두, 인스턴스 생성시 아래 메소드 자동 호출
@@ -145,4 +106,6 @@ public class WorkerService {
         Wharf wharf3 = new Wharf(3L, "제 3 부두");
         wharfRepository.saveAll(List.of(wharf1, wharf2, wharf3));
     }
+
+
 }

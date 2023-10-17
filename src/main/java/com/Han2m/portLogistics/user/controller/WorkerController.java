@@ -1,67 +1,50 @@
 package com.Han2m.portLogistics.user.controller;
 
+import com.Han2m.portLogistics.user.dto.req.CreateGroup;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
-import com.Han2m.portLogistics.user.entity.Worker;
-import com.Han2m.portLogistics.user.service.S3Service;
 import com.Han2m.portLogistics.user.service.WorkerService;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class WorkerController {
 
     private final WorkerService workerService;
-    private final S3Service s3Service;
-
 
     // Worker 조회
     @GetMapping("/worker/{id}")
-    public ResponseEntity<ResWorkerDto> getWorkerById(@PathVariable Long id) {
+    public ResponseEntity<ResWorkerDto> getWorker(@PathVariable Long id) {
 
         ResWorkerDto resWorkerDto = workerService.getWorkerById(id);
+
         return ResponseEntity.ok(resWorkerDto);
     }
 
+    //TODO IOException 예외처리 확실하게
     //Worker 등록
     @PostMapping("/worker/register")
     public ResponseEntity<ResWorkerDto> registerWorker(@RequestParam MultipartFile faceImg,
-                                                 @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
+                                                 @RequestPart @Validated(CreateGroup.class) ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = workerService.registerWorker(reqWorkerDto);
-
-        // 얼굴 이미지 s3에 저장
-        String faceUrl = s3Service.uploadFaceImg(faceImg,worker.getPersonId());
-
-        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker,faceUrl);
+        ResWorkerDto resWorkerDto = workerService.registerWorker(faceImg,reqWorkerDto);
 
         return ResponseEntity.ok(resWorkerDto);
     }
 
-
-
-    // Worker 수정
+    //Worker 수정
     @PutMapping("/worker/edit/{id}")
     public ResponseEntity<ResWorkerDto> updateWorker(@PathVariable Long id, @RequestParam MultipartFile faceImg,
                                                @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
 
-        Worker worker = workerService.editWorkerInfo(id, reqWorkerDto);
-
-        // 얼굴 이미지 s3에 저장
-        String faceUrl = s3Service.uploadFaceImg(faceImg, worker.getPersonId());
-
-        ResWorkerDto resWorkerDto = workerService.registerWorkerUrl(worker, faceUrl);
+        ResWorkerDto resWorkerDto = workerService.editWorker(id,faceImg ,reqWorkerDto);
 
         return ResponseEntity.ok(resWorkerDto);
     }
@@ -74,20 +57,20 @@ public class WorkerController {
         return ResponseEntity.noContent().build();
     }
 
-
-    //직원들 조회
-    @GetMapping("/workers")
-    public ResponseEntity<Page<ResWorkerDto>> searchAllWorkers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ResWorkerDto> workers = workerService.getAllWorkers(pageable);
-        return ResponseEntity.ok(workers);
-    }
-
-    //직원 이름으로 조회
-    @GetMapping("/worker/search")
-    public ResponseEntity<List<ResWorkerDto>> searchPersonsByName(@RequestParam String name) {
-        List<ResWorkerDto> workers = workerService.searchWorkerByName(name);
-        return ResponseEntity.ok(workers);
-    }
+//
+//    //직원들 조회
+//    @GetMapping("/workers")
+//    public ResponseEntity<Page<ResWorkerDto>> searchAllWorkers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<ResWorkerDto> workers = workerService.getAllWorkers(pageable);
+//        return ResponseEntity.ok(workers);
+//    }
+//
+//    //직원 이름으로 조회
+//    @GetMapping("/worker/search")
+//    public ResponseEntity<List<ResWorkerDto>> searchPersonsByName(@RequestParam String name) {
+//        List<ResWorkerDto> workers = workerService.searchWorkerByName(name);
+//        return ResponseEntity.ok(workers);
+//    }
 
 }

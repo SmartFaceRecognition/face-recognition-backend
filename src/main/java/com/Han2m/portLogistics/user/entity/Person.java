@@ -2,13 +2,13 @@ package com.Han2m.portLogistics.user.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -27,20 +27,19 @@ public class Person {
     private String birth;
     private String phone;
 
-    private String faceUrl;
-
     @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<PersonWharf> PersonWharfList = new ArrayList<>();
+    private List<Wharf> wharfList = new ArrayList<>();
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();
 
 
-    public List<String> getWharfPlaces() {
-        return PersonWharfList.stream()
-                .map(PersonWharf::getWharf)
-                .map(Wharf::getPlace)
-                .collect(Collectors.toList());
+    @Builder
+    public Person(String nationality, String name, Boolean sex, String birth, String phone) {
+        this.nationality = nationality;
+        this.name = name;
+        this.sex = sex;
+        this.birth = birth;
+        this.phone = phone;
     }
-
 }

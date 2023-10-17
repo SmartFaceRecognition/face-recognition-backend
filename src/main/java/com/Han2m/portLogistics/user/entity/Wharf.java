@@ -17,16 +17,17 @@ public class Wharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long wharfId;
-    public String place;
+    public String name;
 
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
-    private List<PersonWharf> PersonWharfList = new ArrayList<>();
+    private List<Person> personList = new ArrayList<>();
 
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();
 
-    public Wharf(Long wharfId, String place) {
+    public Wharf(Long wharfId, String name) {
         this.wharfId = wharfId;
-        this.place = place;
+        this.name = name;
     }
+
 }

@@ -20,9 +20,9 @@ public class GuestController {
 
     private final GuestService guestService;
 
+    //guest 정보 조희
     @GetMapping("/guest/{id}")
-    public ResponseEntity<ResGuestDto> getGuestById(@PathVariable Long id) {
-
+    public ResponseEntity<ResGuestDto> getGuest(@PathVariable Long id) {
         ResGuestDto resGuestDto = guestService.getGuestById(id);
         return ResponseEntity.ok(resGuestDto);
     }

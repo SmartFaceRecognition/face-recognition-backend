@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.dto.req;
 
+import com.Han2m.portLogistics.user.entity.Worker;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,20 +13,34 @@ import java.util.List;
 @Setter
 public class ReqWorkerDto {
 
-    @NotBlank(message = "nationality은 필수값 입니다")
+    @NotBlank(groups = {CreateGroup.class}, message = "nationality은 필수값 입니다")
     private String nationality;
-    @NotBlank(message = "name은 필수값 입니다")
+    @NotBlank(groups = {CreateGroup.class},message = "name은 필수값 입니다")
     private String name;
-    @NotNull(message = "sex은 필수값 입니다")
+    @NotNull(groups = {CreateGroup.class},message = "sex은 필수값 입니다")
     private Boolean sex;
-    @NotBlank(message = "birth은 필수값 입니다")
-    @Size(min = 10,max = 10,message = "생년월일은 8자리 입니다")
+    @NotBlank(groups = {CreateGroup.class},message = "birth은 필수값 입니다")
+    @Size(groups = {CreateGroup.class},min = 10,max = 10,message = "생년월일은 8자리 입니다")
     private String birth;
-    @NotBlank(message = "phone은 필수값 입니다")
-    @Size(min =13,max = 13,message = "핸드폰 번호는 11자리 입니다")
+    @NotBlank(groups = {CreateGroup.class},message = "phone은 필수값 입니다")
+    @Size(groups = {CreateGroup.class},min =13,max = 13,message = "핸드폰 번호는 11자리 입니다")
     private String phone;
-    @NotBlank(message = "position은 필수값 입니다")
+    @NotBlank(groups = {CreateGroup.class},message = "position은 필수값 입니다")
     private String position;
-    @NotNull(message = "wharfs은 필수값 입니다")
+
+    //wharfs name이 들어온다
+    @NotNull(groups = {CreateGroup.class},message = "wharfs은 필수값 입니다")
     private List<String> wharfs;
+
+    public Worker toEntity(){
+         return Worker.builder().
+                 nationality(nationality).
+                 name(name).
+                 position(position).
+                 birth(birth).
+                 sex(sex).
+                 phone(phone).
+                 build();
+    }
+
 }
