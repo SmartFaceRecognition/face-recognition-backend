@@ -1,4 +1,4 @@
-package com.Han2m.portLogistics.user.entity;
+package com.Han2m.portLogistics.user.domain;
 
 
 import jakarta.persistence.*;
@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
+@SuperBuilder
+@NoArgsConstructor
 public class Person {
 
     @Id
@@ -27,19 +29,13 @@ public class Person {
     private String birth;
     private String phone;
 
+    @Builder.Default
     @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Wharf> wharfList = new ArrayList<>();
+    private List<PersonWharf> personWharfList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();
 
 
-    @Builder
-    public Person(String nationality, String name, Boolean sex, String birth, String phone) {
-        this.nationality = nationality;
-        this.name = name;
-        this.sex = sex;
-        this.birth = birth;
-        this.phone = phone;
-    }
 }

@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.user.repository;
 
 
-import com.Han2m.portLogistics.user.entity.Status;
+import com.Han2m.portLogistics.user.domain.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

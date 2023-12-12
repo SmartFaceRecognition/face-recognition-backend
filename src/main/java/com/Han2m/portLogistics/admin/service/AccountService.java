@@ -3,10 +3,10 @@ package com.Han2m.portLogistics.admin.service;
 import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
 import com.Han2m.portLogistics.admin.dto.LoginResponseDto;
 import com.Han2m.portLogistics.admin.dto.UserRequestDto;
-import com.Han2m.portLogistics.admin.entitiy.Account;
+import com.Han2m.portLogistics.admin.domain.Account;
 import com.Han2m.portLogistics.admin.repository.AccountRepository;
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
-import com.Han2m.portLogistics.user.entity.Worker;
+import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class AccountService {
 
             Worker worker = workerRepository.findById(workerId).orElseThrow(EntityNotFoundException::new);
             account.setWorker(worker);
-            worker.setAccount(account);
+          //  worker.setAccount(account);
 
             accountRepository.save(account);
         } else {

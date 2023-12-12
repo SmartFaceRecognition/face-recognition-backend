@@ -3,9 +3,9 @@ package com.Han2m.portLogistics.user.service;
 
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
 import com.Han2m.portLogistics.user.dto.res.ResStatusDto;
-import com.Han2m.portLogistics.user.entity.Person;
-import com.Han2m.portLogistics.user.entity.Status;
-import com.Han2m.portLogistics.user.entity.Wharf;
+import com.Han2m.portLogistics.user.domain.Person;
+import com.Han2m.portLogistics.user.domain.Status;
+import com.Han2m.portLogistics.user.domain.Wharf;
 import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.StatusRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;

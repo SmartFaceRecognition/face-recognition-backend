@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.admin.repository;
 
-import com.Han2m.portLogistics.admin.entitiy.Account;
+import com.Han2m.portLogistics.admin.domain.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

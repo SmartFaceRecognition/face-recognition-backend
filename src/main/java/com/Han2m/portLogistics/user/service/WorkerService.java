@@ -2,13 +2,14 @@ package com.Han2m.portLogistics.user.service;
 
 
 import com.Han2m.portLogistics.exception.EntityNotFoundException;
+import com.Han2m.portLogistics.user.domain.PersonWharf;
+import com.Han2m.portLogistics.user.domain.Wharf;
+import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
-import com.Han2m.portLogistics.user.entity.Wharf;
-import com.Han2m.portLogistics.user.entity.Worker;
+import com.Han2m.portLogistics.user.repository.PersonWharfRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 
 @Slf4j
@@ -29,6 +30,7 @@ public class WorkerService {
     private final S3Service s3Service;
     private final WorkerRepository workerRepository;
     private final WharfRepository wharfRepository;
+    private final PersonWharfRepository personWharfRepository;
 
     // Worker 조회
     @Transactional(readOnly = true)
@@ -39,12 +41,18 @@ public class WorkerService {
         return worker.toResWorkerDto();
     }
 
-    // Worker 등록
+
     public ResWorkerDto registerWorker(MultipartFile faceImg, ReqWorkerDto reqWorkerDto) throws IOException {
+
+        List<Wharf> wharfList = reqWorkerDto.getWharfs().stream().map(wharfRepository::findById).filter(Optional::isPresent).map(Optional::get).toList();
 
         //Dto to entity
         Worker worker = reqWorkerDto.toEntity();
-        worker.setWharfList(reqWorkerDto.getWharfs().stream().map(wharfRepository::findByName).collect(Collectors.toList()));
+
+        for(Wharf wharf:wharfList){
+            PersonWharf personWharf = new PersonWharf(worker,wharf);
+            worker.getPersonWharfList().add(personWharf);
+        }
 
         //worker 정보 DB에 저장
         Worker savedWorker =  workerRepository.save(worker);
@@ -54,24 +62,31 @@ public class WorkerService {
 
         //worker 정보 수정(faceImgUrl 삽입)
         savedWorker.setFaceUrl(faceImgUrl);
-        workerRepository.save(savedWorker);
 
         return savedWorker.toResWorkerDto();
     }
 
-    //Worker 수정
+
     public ResWorkerDto editWorker(Long personId, MultipartFile faceImg, ReqWorkerDto reqWorkerDto) throws IOException {
 
         Worker worker = workerRepository.findById(personId).orElseThrow(EntityNotFoundException::new);
+        personWharfRepository.deleteByPerson(worker);
 
-        //Worker의 정보 수정
-        if(reqWorkerDto.getWharfs() != null) {
-            worker.setWharfList(reqWorkerDto.getWharfs().stream().map(wharfRepository::findByName).collect(Collectors.toList()));
-        }
         worker.updateWorker(reqWorkerDto);
 
+        List<Wharf> wharfList = reqWorkerDto.getWharfs().stream().map(wharfRepository::findById).filter(Optional::isPresent).map(Optional::get).toList();
+
+        List<PersonWharf> personWharfList = worker.getPersonWharfList();
+
+        for (Wharf wharf : wharfList) {
+            PersonWharf personWharf = new PersonWharf(worker, wharf);
+            personWharfList.add(personWharf);
+        }
+
+        worker.setPersonWharfList(personWharfList);
+
         //Worker의 이미지 수정
-        if(!faceImg.isEmpty()){
+        if(faceImg != null){
             String faceImgUrl = s3Service.uploadFaceImg(faceImg,personId);
             worker.setFaceUrl(faceImgUrl);
         }
@@ -96,16 +111,5 @@ public class WorkerService {
 //        List<Worker> workers = workerRepository.findByName(name);
 //        return workers.stream().map(ResWorkerDto::new).collect(Collectors.toList());
 //    }
-
-
-    // 테스트용 랜덤부두, 인스턴스 생성시 아래 메소드 자동 호출
-    @PostConstruct
-    public void createTestWharfs() {
-        Wharf wharf1 = new Wharf(1L, "제 1 부두");
-        Wharf wharf2 = new Wharf(2L, "제 2 부두");
-        Wharf wharf3 = new Wharf(3L, "제 3 부두");
-        wharfRepository.saveAll(List.of(wharf1, wharf2, wharf3));
-    }
-
 
 }

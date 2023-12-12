@@ -1,59 +1,63 @@
 package com.Han2m.portLogistics.user.controller;
 
-import com.Han2m.portLogistics.user.dto.req.CreateGroup;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.service.WorkerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@Tag(name = "직원 API")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class WorkerController {
 
     private final WorkerService workerService;
 
-    // Worker 조회
+    @Operation(summary = "직원 정보 조회")
     @GetMapping("/worker/{id}")
-    public ResponseEntity<ResWorkerDto> getWorker(@PathVariable Long id) {
+    public ResponseEntity<ResWorkerDto> getWorker(@PathVariable @Schema(description = "Worker Id", example = "1") Long id) {
 
         ResWorkerDto resWorkerDto = workerService.getWorkerById(id);
 
         return ResponseEntity.ok(resWorkerDto);
     }
-
-    //TODO IOException 예외처리 확실하게
-    //Worker 등록
-    @PostMapping("/worker/register")
-    public ResponseEntity<ResWorkerDto> registerWorker(@RequestParam MultipartFile faceImg,
-                                                 @RequestPart @Validated(CreateGroup.class) ReqWorkerDto reqWorkerDto) throws IOException {
+    @Operation(summary = "직원 정보 등록하기")
+    @PostMapping( value = "/worker" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResWorkerDto> registerWorker(@Parameter(description = "직원 얼굴 이미지 파일") @RequestParam MultipartFile faceImg,
+                                                       @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
 
         ResWorkerDto resWorkerDto = workerService.registerWorker(faceImg,reqWorkerDto);
 
         return ResponseEntity.ok(resWorkerDto);
     }
 
-    //Worker 수정
-    @PutMapping("/worker/edit/{id}")
-    public ResponseEntity<ResWorkerDto> updateWorker(@PathVariable Long id, @RequestParam MultipartFile faceImg,
-                                               @RequestPart @Validated ReqWorkerDto reqWorkerDto) throws IOException {
-
+    @Operation(summary = "직원 정보 수정하기")
+    @PutMapping(value = "/worker/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResWorkerDto> updateWorker(@PathVariable @Schema(description = "Worker Id", example = "1") Long id, @RequestParam(required = false) MultipartFile faceImg,
+                                               @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
         ResWorkerDto resWorkerDto = workerService.editWorker(id,faceImg ,reqWorkerDto);
 
         return ResponseEntity.ok(resWorkerDto);
     }
 
 
-    //Worker 삭제
+    @Operation(summary = "직원 정보 삭제하기")
     @DeleteMapping("/worker/{id}")
-    public ResponseEntity<? extends HttpEntity> deleteWorkerById(@PathVariable Long id) {
+    public ResponseEntity<? extends HttpEntity> deleteWorkerById(@PathVariable @Schema(description = "Worker Id", example = "1") Long id) {
+
         workerService.deleteWorker(id);
+
         return ResponseEntity.noContent().build();
     }
 

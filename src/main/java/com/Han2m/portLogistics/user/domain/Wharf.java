@@ -1,4 +1,4 @@
-package com.Han2m.portLogistics.user.entity;
+package com.Han2m.portLogistics.user.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,10 +17,11 @@ public class Wharf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long wharfId;
+
     public String name;
 
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
-    private List<Person> personList = new ArrayList<>();
+    private List<PersonWharf> personWharfList = new ArrayList<>();
 
     @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();

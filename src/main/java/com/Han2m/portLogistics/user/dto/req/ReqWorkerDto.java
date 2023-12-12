@@ -1,9 +1,7 @@
 package com.Han2m.portLogistics.user.dto.req;
 
-import com.Han2m.portLogistics.user.entity.Worker;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.Han2m.portLogistics.user.domain.Worker;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,24 +11,20 @@ import java.util.List;
 @Setter
 public class ReqWorkerDto {
 
-    @NotBlank(groups = {CreateGroup.class}, message = "nationality은 필수값 입니다")
+    @Schema(description = "국적", example = "대한민국")
     private String nationality;
-    @NotBlank(groups = {CreateGroup.class},message = "name은 필수값 입니다")
+    @Schema(description = "이름", example = "김철수")
     private String name;
-    @NotNull(groups = {CreateGroup.class},message = "sex은 필수값 입니다")
+    @Schema(description = "성별 남자는 true,여자는 false", example = "true")
     private Boolean sex;
-    @NotBlank(groups = {CreateGroup.class},message = "birth은 필수값 입니다")
-    @Size(groups = {CreateGroup.class},min = 10,max = 10,message = "생년월일은 8자리 입니다")
+    @Schema(description = "생년월일 yymmdd 형식", example = "990402")
     private String birth;
-    @NotBlank(groups = {CreateGroup.class},message = "phone은 필수값 입니다")
-    @Size(groups = {CreateGroup.class},min =13,max = 13,message = "핸드폰 번호는 11자리 입니다")
+    @Schema(description = "전화번호", example = "01012345678")
     private String phone;
-    @NotBlank(groups = {CreateGroup.class},message = "position은 필수값 입니다")
+    @Schema(description = "직책", example = "과장")
     private String position;
-
-    //wharfs name이 들어온다
-    @NotNull(groups = {CreateGroup.class},message = "wharfs은 필수값 입니다")
-    private List<String> wharfs;
+    @Schema(description = "허가된 부두", example = "[1,2,3]")
+    private List<Long> wharfs;
 
     public Worker toEntity(){
          return Worker.builder().

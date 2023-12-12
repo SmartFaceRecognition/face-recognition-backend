@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.config;
 
-import com.Han2m.portLogistics.admin.entitiy.Account;
+import com.Han2m.portLogistics.admin.domain.Account;
 import com.Han2m.portLogistics.admin.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

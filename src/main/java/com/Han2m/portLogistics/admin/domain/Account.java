@@ -1,6 +1,6 @@
-package com.Han2m.portLogistics.admin.entitiy;
+package com.Han2m.portLogistics.admin.domain;
 
-import com.Han2m.portLogistics.user.entity.Worker;
+import com.Han2m.portLogistics.user.domain.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,8 +11,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Account {
 
     @Id
@@ -22,7 +22,6 @@ public class Account {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-//    @Builder.Default
     private List<String> roles;
 
     public void updateInfo(String accountId, String password) {

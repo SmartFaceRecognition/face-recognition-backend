@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.user.dto.res;
 
-import com.Han2m.portLogistics.user.entity.Status;
+import com.Han2m.portLogistics.user.domain.Status;
 import lombok.Getter;
 import lombok.Setter;
 
