@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.controller;
 
+import com.Han2m.portLogistics.user.domain.Guest;
 import com.Han2m.portLogistics.user.dto.req.ReqGuestDto;
 import com.Han2m.portLogistics.user.dto.res.ResGuestDto;
 import com.Han2m.portLogistics.user.service.GuestService;
@@ -23,26 +24,26 @@ public class GuestController {
     @GetMapping("/guest/{id}")
     public ResponseEntity<ResGuestDto> getGuest(@PathVariable @Schema(description = "Guest Id", example = "1") Long id) {
 
-        ResGuestDto resGuestDto = guestService.getGuestById(id);
+        Guest guest = guestService.find(id);
 
-        return ResponseEntity.ok(resGuestDto);
+        return ResponseEntity.ok(guest.toResGuestDto());
     }
     @Operation(summary = "게스트 정보 등록하기")
     @PostMapping("/guest")
     public ResponseEntity<ResGuestDto> registerGuest(@RequestBody ReqGuestDto reqGuestDto) {
 
-        ResGuestDto registeredGuest = guestService.registerGuest(reqGuestDto);
+        Guest guest = guestService.registerGuest(reqGuestDto);
 
-        return ResponseEntity.ok(registeredGuest);
+        return ResponseEntity.ok(guest.toResGuestDto());
     }
 
     @Operation(summary = "게스트 정보 수정하기")
     @PutMapping("/guest/{id}")
     public ResponseEntity<ResGuestDto> updateGuest(@PathVariable Long id, @RequestBody ReqGuestDto reqGuestDto) {
 
-        ResGuestDto updatedReqGuestDto = guestService.editGuestInfo(id, reqGuestDto);
+        Guest guest = guestService.editGuestInfo(id, reqGuestDto);
 
-        return ResponseEntity.ok(updatedReqGuestDto);
+        return ResponseEntity.ok(guest.toResGuestDto());
     }
 
     @Operation(summary = "게스트 정보 삭제하기")

@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.controller;
 
+import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import com.Han2m.portLogistics.user.service.WorkerService;
@@ -28,27 +29,27 @@ public class WorkerController {
     @GetMapping("/worker/{id}")
     public ResponseEntity<ResWorkerDto> getWorker(@PathVariable @Schema(description = "Worker Id", example = "1") Long id) {
 
-        ResWorkerDto resWorkerDto = workerService.getWorkerById(id);
+        Worker worker = workerService.find(id);
 
-        return ResponseEntity.ok(resWorkerDto);
+        return ResponseEntity.ok(worker.toResWorkerDto());
     }
     @Operation(summary = "직원 정보 등록하기")
     @PostMapping( value = "/worker" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResWorkerDto> registerWorker(@Parameter(description = "직원 얼굴 이미지 파일") @RequestParam MultipartFile faceImg,
                                                        @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
 
-        ResWorkerDto resWorkerDto = workerService.registerWorker(faceImg,reqWorkerDto);
+        Worker worker = workerService.registerWorker(faceImg,reqWorkerDto);
 
-        return ResponseEntity.ok(resWorkerDto);
+        return ResponseEntity.ok(worker.toResWorkerDto());
     }
 
     @Operation(summary = "직원 정보 수정하기")
     @PutMapping(value = "/worker/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResWorkerDto> updateWorker(@PathVariable @Schema(description = "Worker Id", example = "1") Long id, @RequestParam(required = false) MultipartFile faceImg,
                                                @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
-        ResWorkerDto resWorkerDto = workerService.editWorker(id,faceImg ,reqWorkerDto);
+        Worker worker = workerService.editWorker(id,faceImg ,reqWorkerDto);
 
-        return ResponseEntity.ok(resWorkerDto);
+        return ResponseEntity.ok(worker.toResWorkerDto());
     }
 
 

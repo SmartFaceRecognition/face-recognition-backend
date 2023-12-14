@@ -23,8 +23,6 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -85,7 +83,7 @@ class GuestControllerTest {
                 build();
 
         // guestService의 registerGuest 메서드가 호출될 때의 동작 설정
-        when(guestService.registerGuest(any(ReqGuestDto.class))).thenReturn(res);
+        //when(guestService.registerGuest(any(ReqGuestDto.class))).thenReturn(res);
 
         // POST 요청 실행
         mockMvc.perform(post("/guest/register").with(csrf()).
@@ -143,7 +141,7 @@ class GuestControllerTest {
                 build();
 
         // guestService의 registerGuest 메서드가 호출될 때의 동작 설정
-        when(guestService.editGuestInfo(1L,req)).thenReturn(res);
+        //when(guestService.editGuestInfo(1L,req)).thenReturn(res);
 
         // POST 요청 실행
         mockMvc.perform(post("/guest/register").with(csrf()).
