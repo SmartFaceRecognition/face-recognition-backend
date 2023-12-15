@@ -31,7 +31,7 @@ public class WorkerController {
 
         Worker worker = workerService.find(id);
 
-        return ResponseEntity.ok(worker.toResWorkerDto());
+        return ResponseEntity.ok(new ResWorkerDto(worker));
     }
     @Operation(summary = "직원 정보 등록하기")
     @PostMapping( value = "/worker" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +40,7 @@ public class WorkerController {
 
         Worker worker = workerService.registerWorker(faceImg,reqWorkerDto);
 
-        return ResponseEntity.ok(worker.toResWorkerDto());
+        return ResponseEntity.ok(new ResWorkerDto(worker));
     }
 
     @Operation(summary = "직원 정보 수정하기")
@@ -49,7 +49,7 @@ public class WorkerController {
                                                @RequestPart ReqWorkerDto reqWorkerDto) throws IOException {
         Worker worker = workerService.editWorker(id,faceImg ,reqWorkerDto);
 
-        return ResponseEntity.ok(worker.toResWorkerDto());
+        return ResponseEntity.ok(new ResWorkerDto(worker));
     }
 
 

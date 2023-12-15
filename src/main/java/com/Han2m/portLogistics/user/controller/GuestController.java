@@ -26,7 +26,7 @@ public class GuestController {
 
         Guest guest = guestService.find(id);
 
-        return ResponseEntity.ok(guest.toResGuestDto());
+        return ResponseEntity.ok(new ResGuestDto(guest));
     }
     @Operation(summary = "게스트 정보 등록하기")
     @PostMapping("/guest")
@@ -34,7 +34,7 @@ public class GuestController {
 
         Guest guest = guestService.registerGuest(reqGuestDto);
 
-        return ResponseEntity.ok(guest.toResGuestDto());
+        return ResponseEntity.ok(new ResGuestDto(guest));
     }
 
     @Operation(summary = "게스트 정보 수정하기")
@@ -43,7 +43,7 @@ public class GuestController {
 
         Guest guest = guestService.editGuestInfo(id, reqGuestDto);
 
-        return ResponseEntity.ok(guest.toResGuestDto());
+        return ResponseEntity.ok(new ResGuestDto(guest));
     }
 
     @Operation(summary = "게스트 정보 삭제하기")

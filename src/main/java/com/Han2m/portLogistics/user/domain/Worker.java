@@ -2,7 +2,6 @@ package com.Han2m.portLogistics.user.domain;
 
 import com.Han2m.portLogistics.admin.domain.Account;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
-import com.Han2m.portLogistics.user.dto.res.ResWorkerDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -43,17 +41,5 @@ public class Worker extends Person{
         this.setBirth(reqWorkerDto.getBirth());
     }
 
-    public ResWorkerDto toResWorkerDto(){
-        return ResWorkerDto.builder().
-                personId(getPersonId()).
-                birth(getBirth()).
-                faceUrl(getFaceUrl()).
-                sex(getSex()).
-                name(getName()).
-                nationality(getNationality()).
-                phone(getPhone()).
-                position(getPosition()).
-                wharfs(getPersonWharfList().stream().map(PersonWharf::getWharf).map(Wharf::getName).collect(Collectors.toList())).
-                build();
-    }
+
 }

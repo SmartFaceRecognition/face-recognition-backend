@@ -2,7 +2,6 @@ package com.Han2m.portLogistics.user.domain;
 
 
 import com.Han2m.portLogistics.user.dto.req.ReqGuestDto;
-import com.Han2m.portLogistics.user.dto.res.ResGuestDto;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -51,20 +49,4 @@ public class Guest extends Person{
         this.date = reqGuestDto.getDate();
 
     }
-    
-    public ResGuestDto toResGuestDto(){
-        return ResGuestDto.builder().
-                personId(getPersonId()).
-                birth(getBirth()).
-                sex(getSex()).
-                name(getName()).
-                nationality(getNationality()).
-                phone(getPhone()).
-                goal(getGoal()).
-                reason(getReason()).
-                date(getDate()).
-                wharfs(getPersonWharfList().stream().map(PersonWharf::getWharf).map(Wharf::getName).collect(Collectors.toList())).
-                build();
-    }
-    
 }

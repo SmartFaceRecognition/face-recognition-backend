@@ -1,5 +1,8 @@
 package com.Han2m.portLogistics.user.dto.res;
 
+import com.Han2m.portLogistics.user.domain.Guest;
+import com.Han2m.portLogistics.user.domain.PersonWharf;
+import com.Han2m.portLogistics.user.domain.Wharf;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,5 +33,17 @@ public class ResGuestDto{
     private List<String> wharfs;
 
 
-
+    public ResGuestDto(Guest guest) {
+        this.nationality = guest.getNationality();
+        this.name = guest.getName();
+        this.sex = guest.getSex();
+        this.birth = guest.getBirth();
+        this.phone = guest.getPhone();
+        this.personId = guest.getPersonId();
+        this.date = guest.getDate();
+        this.reason = guest.getReason();
+        this.goal = guest.getGoal();
+        this.workerId = guest.getPersonId();
+        this.wharfs = guest.getPersonWharfList().stream().map(PersonWharf::getWharf).map(Wharf::getName).toList();
+    }
 }
