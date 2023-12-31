@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface StatusRepository extends JpaRepository<Status, Long> {
-    List<Status> findByOutTimeIsNull();
+
     List<Status> findByOutTimeIsNullAndWharfWharfId(Long wharfId);
     @Query("SELECT s FROM Status s WHERE s.person = :person AND s.wharf = :wharf AND s.outTime IS NULL")
     Optional<Status> findByPersonAndWharf(Person person, Wharf wharf);

@@ -1,14 +1,10 @@
 package com.Han2m.portLogistics.user.service;
 
 
-import com.Han2m.portLogistics.exception.EntityNotFoundException;
-import com.Han2m.portLogistics.user.dto.res.ResStatusDto;
 import com.Han2m.portLogistics.user.domain.Person;
 import com.Han2m.portLogistics.user.domain.Status;
 import com.Han2m.portLogistics.user.domain.Wharf;
-import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.StatusRepository;
-import com.Han2m.portLogistics.user.repository.WharfRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +19,12 @@ import java.util.stream.Collectors;
 public class StatusService {
 
     private final StatusRepository statusRepository;
-    private final PersonRepository personRepository;
-    private final WharfRepository wharfRepository;
+    private final PersonService personService;
+    private final WharfService wharfService;
 
-    public void registerPersonEnter(Long id, Long wharfId){
-        Person person = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(EntityNotFoundException::new);
+    public void registerWorkerEnter(Long id, Long wharfId){
+        Person person = personService.find(id);
+        Wharf wharf = wharfService.find(wharfId);
 
         // 입장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
@@ -50,9 +45,9 @@ public class StatusService {
         }
     }
 
-    public void registerPersonOut(Long id, Long wharfId){
-        Person person = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(EntityNotFoundException::new);
+    public void registerWorkerOut(Long id, Long wharfId){
+        Person person = personService.find(id);
+        Wharf wharf = wharfService.find(wharfId);
 
         Optional<Status> status = statusRepository.findByPersonAndWharf(person, wharf);
         if(status.isPresent()){
@@ -63,14 +58,7 @@ public class StatusService {
 
 
     @Transactional(readOnly = true)
-    public List<ResStatusDto> getAllWorkerInWharf(){
-        List<Status> statuses = statusRepository.findByOutTimeIsNull();
-        return statuses.stream().map(ResStatusDto::new).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<ResStatusDto> getWorkerInWharf(Long wharfId){
-        List<Status> statuses = statusRepository.findByOutTimeIsNullAndWharfWharfId(wharfId);
-        return statuses.stream().map(ResStatusDto::new).collect(Collectors.toList());
+    public List<Status> findWorkerInWharf(Long wharfId){
+        return statusRepository.findByOutTimeIsNullAndWharfWharfId(wharfId);
     }
 }

@@ -9,6 +9,7 @@ import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +33,14 @@ public class WorkerService {
     }
 
     @Transactional(readOnly = true)
-    public List<Worker> findAllWorkerAndWharf() {
-        return workerRepository.findAllWorkerWithWharf();
+    public List<Worker> findAllWorkerAndWharf(String name,int sort,int dir) {
+
+        Sort.Direction direction = (dir == 1) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        String sortField = (sort == 0) ? "name" : "position";
+        Sort dynamicSort = Sort.by(direction, sortField);
+
+        return workerRepository.findAllWorkerWithWharf(name,dynamicSort);
     }
 
     public void deleteWorker(Long personId) {

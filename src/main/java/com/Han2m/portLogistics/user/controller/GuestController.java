@@ -36,11 +36,11 @@ public class GuestController {
 
     @Operation(summary = "모든 게스트 정보 조회")
     @GetMapping("/guests")
-    public ApiResponse<List<ResGuestSimpleDto>> getWorkerList() {
+    public ApiResponse<List<ResGuestSimpleDto>> getWorkerList(@RequestParam(name = "search",defaultValue = "") String name,
+                                                              @RequestParam(name = "sort", defaultValue = "0") int sort,
+                                                              @RequestParam(name = "dir", defaultValue = "1") int dir) {
 
-        List<Guest> guestList = guestService.findAllGuestAndWharf();
-
-        List<ResGuestSimpleDto> resGuestSimpleDtoList = guestList.stream().map(ResGuestSimpleDto::new).toList();
+        List<ResGuestSimpleDto> resGuestSimpleDtoList = guestService.findAllGuestAndWharf(name,sort,dir).stream().map(ResGuestSimpleDto::new).toList();
 
         return successResponse(resGuestSimpleDtoList);
     }

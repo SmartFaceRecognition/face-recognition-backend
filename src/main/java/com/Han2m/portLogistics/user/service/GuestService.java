@@ -8,6 +8,7 @@ import com.Han2m.portLogistics.user.dto.req.ReqGuestDto;
 import com.Han2m.portLogistics.user.repository.GuestRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +34,13 @@ public class GuestService {
         guestRepository.delete(guestRepository.findById(personId).orElseThrow(EntityNotFoundException::new));
     }
 
-    public List<Guest> findAllGuestAndWharf(){
-       return guestRepository.findAllGuestWithWharf();
+    public List<Guest> findAllGuestAndWharf(String name,int sort,int dir){
+        Sort.Direction direction = (dir == 1) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        String sortField = (sort == 0) ? "name" : "position";
+        Sort dynamicSort = Sort.by(direction, sortField);
+
+        return guestRepository.findAllGuestWithWharf(name,dynamicSort);
     }
 
     public Guest registerGuest(ReqGuestDto reqGuestDto) {
