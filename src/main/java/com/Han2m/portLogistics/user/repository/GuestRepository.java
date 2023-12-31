@@ -2,14 +2,18 @@ package com.Han2m.portLogistics.user.repository;
 
 import com.Han2m.portLogistics.user.domain.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GuestRepository extends JpaRepository<Guest, Long> {
 
-    List<Guest> findByName (String name);
+    @Query("select g from Guest g join fetch g.permissionList p join fetch p.wharf")
+    List<Guest> findAllGuestWithWharf();
 
-    void deleteByPersonId(Long id);
+    @Query("select g from Guest g join fetch g.permissionList p join fetch g.worker join fetch p.wharf where g.personId = :personId")
+    Optional<Guest> findById(Long personId);
 }

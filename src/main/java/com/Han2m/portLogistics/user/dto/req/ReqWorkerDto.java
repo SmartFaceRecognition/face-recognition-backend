@@ -34,6 +34,7 @@ public class ReqWorkerDto {
                  birth(birth).
                  sex(sex).
                  phone(phone).
+                 isWorker(true).
                  build();
     }
 

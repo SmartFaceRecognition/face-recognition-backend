@@ -20,10 +20,10 @@ public class Wharf {
 
     public String name;
 
-    @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
-    private List<PersonWharf> personWharfList = new ArrayList<>();
+    @OneToMany(mappedBy = "wharf",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Permission> permissionList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "wharf", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "wharf",fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();
 
     public Wharf(Long wharfId, String name) {

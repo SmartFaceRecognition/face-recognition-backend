@@ -22,7 +22,7 @@ public class GuestService {
     private final GuestRepository guestRepository;
     private final WharfRepository wharfRepository;
     private final WorkerService workerService;
-    private final PersonWharfService personWharfService;
+    private final PermissionService permissionService;
 
     @Transactional(readOnly = true)
     public Guest find(Long id) {
@@ -33,17 +33,23 @@ public class GuestService {
         guestRepository.delete(guestRepository.findById(personId).orElseThrow(EntityNotFoundException::new));
     }
 
+    public List<Guest> findAllGuestAndWharf(){
+       return guestRepository.findAllGuestWithWharf();
+    }
+
     public Guest registerGuest(ReqGuestDto reqGuestDto) {
 
         List<Wharf> wharfList = reqGuestDto.getWharfs().stream().map(wharfRepository::findById).filter(Optional::isPresent).map(Optional::get).toList();
 
         Guest guest = reqGuestDto.toEntity();
 
-        personWharfService.matchPersonWharf(guest,wharfList);
+        permissionService.permit(guest,wharfList);
 
         //담당자 등록
         Worker worker = workerService.find(reqGuestDto.getWorkerId());
         guest.setWorker(worker);
+
+        guestRepository.save(guest);
 
         return guest;
     }

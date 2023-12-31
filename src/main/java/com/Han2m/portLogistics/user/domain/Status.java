@@ -1,16 +1,18 @@
 package com.Han2m.portLogistics.user.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Timestamp;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +28,12 @@ public class Status {
     @ManyToOne
     @JoinColumn(name = "personId")
     private Person person;
+
+    public void updateEnterTImeTime(Timestamp enterTime){
+        this.enterTime = enterTime;
+    }
+    public void updateOutTime(Timestamp outTime){
+        this.outTime = outTime;
+    }
 
 }

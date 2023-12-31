@@ -56,6 +56,7 @@ public class ReqGuestDto{
                 reason(reason).
                 goal(goal).
                 date(date).
+                isWorker(false).
                 build();
     }
 

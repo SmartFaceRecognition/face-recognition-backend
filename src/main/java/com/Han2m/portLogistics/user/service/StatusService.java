@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,36 +27,38 @@ public class StatusService {
     private final PersonRepository personRepository;
     private final WharfRepository wharfRepository;
 
-    public ResStatusDto registerWorkerEnter(Long id, Long wharfId){
+    public void registerPersonEnter(Long id, Long wharfId){
         Person person = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(EntityNotFoundException::new);
 
         // 입장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
-        Status status = new Status();
+        //현재 status 존재하는지 확인
+        Optional<Status> status = statusRepository.findByPersonAndWharf(person, wharf);
 
-        status.setPerson(person);
-        status.setEnterTime(currentTime);
-        status.setWharf(wharf);
-
-        statusRepository.save(status);
-
-        return new ResStatusDto(status);
+        if(status.isEmpty()){
+            Status newStatus = Status.builder().
+                    person(person).
+                    wharf(wharf).
+                    enterTime(currentTime).
+                    build();
+            statusRepository.save(newStatus);
+        }
+        else{
+            status.get().updateEnterTImeTime(currentTime);
+        }
     }
 
-    public ResStatusDto registerWorkerOut(Long id, Long wharfId){
+    public void registerPersonOut(Long id, Long wharfId){
+        Person person = personRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(EntityNotFoundException::new);
 
-        Status status = statusRepository.findLastStatusWithNullOutTimeByWharfAndPerson(wharfId,id);
-
-        // 퇴장 시간 (현재 시간)
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-
-        status.setOutTime(currentTime);
-
-        statusRepository.save(status);
-
-        return new ResStatusDto(status);
+        Optional<Status> status = statusRepository.findByPersonAndWharf(person, wharf);
+        if(status.isPresent()){
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            status.get().updateOutTime(currentTime);
+        }
     }
 
 
@@ -70,6 +73,4 @@ public class StatusService {
         List<Status> statuses = statusRepository.findByOutTimeIsNullAndWharfWharfId(wharfId);
         return statuses.stream().map(ResStatusDto::new).collect(Collectors.toList());
     }
-
-
 }

@@ -23,9 +23,9 @@ public class Worker extends Person{
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Account account;
     //담당하고 있는 외부인
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Guest> guests = new ArrayList<>();
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Control> controlList = new ArrayList<>();
 
     public void setFaceUrl(String faceUrl) {

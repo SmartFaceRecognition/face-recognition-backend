@@ -9,20 +9,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PersonWharf {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long PersonWharfId;
+    private Long PermissionId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personId")
     private Person person;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wharfId")
     private Wharf wharf;
 
-    public PersonWharf(Person person, Wharf wharf) {
+    public Permission(Person person, Wharf wharf) {
         this.person = person;
         this.wharf = wharf;
     }

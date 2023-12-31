@@ -28,13 +28,13 @@ public class Person {
     private Boolean sex;
     private String birth;
     private String phone;
-
+    private boolean isWorker;
     @Builder.Default
     @OneToMany(mappedBy = "person", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<PersonWharf> personWharfList = new ArrayList<>();
+    private List<Permission> permissionList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Status> statusList = new ArrayList<>();
 
 

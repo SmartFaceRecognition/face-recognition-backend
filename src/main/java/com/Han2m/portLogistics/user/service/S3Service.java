@@ -1,5 +1,6 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.user.domain.Worker;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -21,8 +22,11 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     private final AmazonS3 amazonS3;
+    private final WorkerService workerService;
 
-    public String uploadFaceImg(MultipartFile multipartFile,Long key) throws IOException {
+    public void uploadFaceImg(Long id,MultipartFile multipartFile) throws IOException {
+
+        Worker worker = workerService.find(id);
 
         String fileName = multipartFile.getOriginalFilename();
 
@@ -38,7 +42,7 @@ public class S3Service {
             //content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이 되서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
         };
 
-        String s3ObjectName = "faceImg/" + key.toString() + "." + ext;
+        String s3ObjectName = "faceImg/" + id.toString() + "." + ext;
 
         try {
             byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
@@ -52,7 +56,7 @@ public class S3Service {
             e.printStackTrace();
         }
 
-        return amazonS3.getUrl(bucket,s3ObjectName).toString();
+        worker.setFaceUrl(String.valueOf(amazonS3.getUrl(bucket, s3ObjectName)));
     }
 
 }
