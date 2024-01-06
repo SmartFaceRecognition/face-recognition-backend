@@ -56,11 +56,11 @@ public class GuestController {
 
     @Operation(summary = "게스트 정보 수정하기")
     @PutMapping("/guest/{id}")
-    public ApiResponse<ResGuestDto> updateGuest(@PathVariable Long id, @RequestBody ReqGuestDto reqGuestDto) {
+    public ApiResponse<?> updateGuest(@PathVariable Long id, @RequestBody ReqGuestDto reqGuestDto) {
 
-        Guest guest = guestService.editGuestInfo(id, reqGuestDto);
+        guestService.editGuestInfo(id, reqGuestDto);
 
-        return successResponse(new ResGuestDto(guest));
+        return successResponseNoContent();
     }
 
     @Operation(summary = "게스트 정보 삭제하기")

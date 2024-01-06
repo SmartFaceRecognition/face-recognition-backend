@@ -20,6 +20,7 @@ public class Worker extends Person{
     //직급
     private String position;
     private String faceUrl;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Account account;
     //담당하고 있는 외부인
@@ -30,6 +31,9 @@ public class Worker extends Person{
 
     public void setFaceUrl(String faceUrl) {
         this.faceUrl = faceUrl;
+    }
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public void updateWorker(ReqWorkerDto reqWorkerDto){

@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,6 +62,7 @@ public class WorkerController {
         return successResponse(new ResWorkerDto(worker));
     }
 
+
     @Operation(summary = "직원 이미지 등록 및 수정")
     @PutMapping(value= "/worker/{id}/img",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<?> registerWorkerImg(@PathVariable Long id,@Parameter(description = "직원 얼굴 이미지 파일") @RequestParam MultipartFile faceImg) throws IOException {
@@ -71,10 +74,20 @@ public class WorkerController {
 
     @Operation(summary = "직원 정보 수정하기")
     @PutMapping(value = "/worker/{id}")
-    public ApiResponse<ResWorkerDto> updateWorker(@PathVariable @Schema(description = "Worker Id", example = "1") Long id,@RequestBody ReqWorkerDto reqWorkerDto){
-        Worker worker = workerService.editWorker(id,reqWorkerDto);
+    public ApiResponse<?> updateWorker(@PathVariable @Schema(description = "Worker Id", example = "1") Long id,@RequestBody ReqWorkerDto reqWorkerDto){
 
-        return successResponse(new ResWorkerDto(worker));
+        workerService.editWorker(id,reqWorkerDto);
+
+        return successResponseNoContent();
+    }
+
+    @Operation(summary = "내 정보 수정")
+    @PutMapping("/worker")
+    public ApiResponse<?> updateMe(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ReqWorkerDto reqWorkerDto) {
+
+        workerService.editMe(userDetails.getUsername(),reqWorkerDto);
+
+        return successResponseNoContent();
     }
 
 

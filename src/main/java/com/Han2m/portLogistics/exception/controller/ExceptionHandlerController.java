@@ -1,7 +1,10 @@
 package com.Han2m.portLogistics.exception.controller;
 
 import com.Han2m.portLogistics.exception.ApiResponse;
-import com.Han2m.portLogistics.exception.EntityNotFoundException;
+import com.Han2m.portLogistics.exception.ApplicationException;
+import com.Han2m.portLogistics.exception.CustomException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -11,23 +14,24 @@ import static com.Han2m.portLogistics.exception.ApiResponse.errorResponse;
 @RestControllerAdvice
 public class ExceptionHandlerController {
 
-    //유효성 검사에서의 오류
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ApiResponse<?> MethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-//
-//        //가장위에 오류 유효성 검사에서의 오류를 가져온다
-//        String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-//
-//        errorResponse(ENTITY_NOT_FOUND);
-//
-//        return .;
-//    }
-
-    //요청한 pk로 엔티티를 찾을수없을때의 오류
-    @ExceptionHandler(com.Han2m.portLogistics.exception.EntityNotFoundException.class)
-    public ApiResponse<?> handleEntityNotFoundException(EntityNotFoundException ex) {
-        return errorResponse(ex.getMessage());
+    @ExceptionHandler(CustomException.class)
+    public ApiResponse<?> handleCustomException(CustomException ex) {
+        return errorResponse(ex.getErrorCode());
     }
 
+    @ExceptionHandler(ApplicationException.class)
+    public ApiResponse<?> handleApplicationException(ApplicationException ex) {
+        return errorResponse(ex.getStatus(), ex.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ApiResponse<?> handleExpiredJwtException(ExpiredJwtException ex) {
+        return errorResponse(400,"유효기간이 만료된 토큰입니다.");
+    }
+
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public ApiResponse<?> handleUnsupportedJwtException(UnsupportedJwtException ex) {
+        return errorResponse(400,"지원하지 않는 향식의 토큰입니다.");
+    }
 
 }

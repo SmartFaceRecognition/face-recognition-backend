@@ -1,6 +1,8 @@
 package com.Han2m.portLogistics.user.service;
 
+import com.Han2m.portLogistics.exception.CustomException;
 import com.Han2m.portLogistics.user.domain.Worker;
+import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -22,11 +24,11 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     private final AmazonS3 amazonS3;
-    private final WorkerService workerService;
+    private final WorkerRepository workerRepository;
 
     public void uploadFaceImg(Long id,MultipartFile multipartFile) throws IOException {
 
-        Worker worker = workerService.find(id);
+        Worker worker = workerRepository.findById(id).orElseThrow(CustomException.EntityNotFoundException::new);
 
         String fileName = multipartFile.getOriginalFilename();
 

@@ -1,19 +1,18 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.exception.EntityNotFoundException;
+import com.Han2m.portLogistics.exception.CustomException;
 import com.Han2m.portLogistics.user.domain.Guest;
 import com.Han2m.portLogistics.user.domain.Wharf;
 import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.dto.req.ReqGuestDto;
 import com.Han2m.portLogistics.user.repository.GuestRepository;
-import com.Han2m.portLogistics.user.repository.WharfRepository;
+import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -21,18 +20,14 @@ import java.util.Optional;
 public class GuestService {
 
     private final GuestRepository guestRepository;
-    private final WharfRepository wharfRepository;
-    private final WorkerService workerService;
+    private final WharfService wharfService;
+    private final WorkerRepository workerRepository;
     private final PermissionService permissionService;
 
-    @Transactional(readOnly = true)
-    public Guest find(Long id) {
-        return guestRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public Guest find(Long personId) {
+        return guestRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
     }
 
-    public void deleteGuest(Long personId) {
-        guestRepository.delete(guestRepository.findById(personId).orElseThrow(EntityNotFoundException::new));
-    }
 
     public List<Guest> findAllGuestAndWharf(String name,int sort,int dir){
         Sort.Direction direction = (dir == 1) ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -45,14 +40,14 @@ public class GuestService {
 
     public Guest registerGuest(ReqGuestDto reqGuestDto) {
 
-        List<Wharf> wharfList = reqGuestDto.getWharfs().stream().map(wharfRepository::findById).filter(Optional::isPresent).map(Optional::get).toList();
+        List<Wharf> wharfList = wharfService.getWharfList(reqGuestDto.getWharfs());
 
         Guest guest = reqGuestDto.toEntity();
 
         permissionService.permit(guest,wharfList);
 
         //담당자 등록
-        Worker worker = workerService.find(reqGuestDto.getWorkerId());
+        Worker worker = workerRepository.findById(reqGuestDto.getWorkerId()).orElseThrow(CustomException.EntityNotFoundException::new);
         guest.setWorker(worker);
 
         guestRepository.save(guest);
@@ -61,12 +56,15 @@ public class GuestService {
     }
 
 
-    public Guest editGuestInfo(Long id, ReqGuestDto reqGuestDto) {
+    public void editGuestInfo(Long personId, ReqGuestDto reqGuestDto) {
 
-        Guest guest = find(id);
+        Guest guest = find(personId);
         guest.updateGuest(reqGuestDto);
 
-        return guest;
+    }
+
+    public void deleteGuest(Long personId) {
+        guestRepository.delete(guestRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new));
     }
 
 

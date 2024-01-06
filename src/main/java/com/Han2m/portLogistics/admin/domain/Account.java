@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,12 +23,14 @@ public class Account {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
-    public void updateInfo(String accountId, String password) {
-        this.accountId = accountId;
+    @OneToOne(mappedBy = "account", optional = false)
+    private Worker worker;
+
+    public void editPassword(String password) {
         this.password = password;
     }
 
-    @OneToOne(mappedBy = "account")
-    private Worker worker;
-
+    public void setWorker(Worker worker) {
+        this.worker = worker;
+    }
 }

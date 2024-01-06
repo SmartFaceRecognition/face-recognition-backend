@@ -1,10 +1,13 @@
 package com.Han2m.portLogistics.user.service;
 
 
+import com.Han2m.portLogistics.exception.CustomException;
 import com.Han2m.portLogistics.user.domain.Person;
 import com.Han2m.portLogistics.user.domain.Status;
 import com.Han2m.portLogistics.user.domain.Wharf;
+import com.Han2m.portLogistics.user.repository.PersonRepository;
 import com.Han2m.portLogistics.user.repository.StatusRepository;
+import com.Han2m.portLogistics.user.repository.WharfRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +21,14 @@ import java.util.Optional;
 @Transactional
 public class StatusService {
 
-    private final StatusRepository statusRepository;
-    private final PersonService personService;
     private final WharfService wharfService;
+    private final PersonRepository personRepository;
+    private final StatusRepository statusRepository;
+    private final WharfRepository wharfRepository;
 
-    public void registerWorkerEnter(Long id, Long wharfId){
-        Person person = personService.find(id);
-        Wharf wharf = wharfService.find(wharfId);
+    public void registerWorkerEnter(Long personId, Long wharfId){
+        Person person = personRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
+        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(CustomException.EntityNotFoundException::new);
 
         // 입장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
@@ -45,9 +49,9 @@ public class StatusService {
         }
     }
 
-    public void registerWorkerOut(Long id, Long wharfId){
-        Person person = personService.find(id);
-        Wharf wharf = wharfService.find(wharfId);
+    public void registerWorkerOut(Long personId, Long wharfId){
+        Person person = personRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
+        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(CustomException.EntityNotFoundException::new);
 
         Optional<Status> status = statusRepository.findByPersonAndWharf(person, wharf);
         if(status.isPresent()){

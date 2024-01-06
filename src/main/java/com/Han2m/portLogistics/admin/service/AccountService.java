@@ -1,11 +1,10 @@
 package com.Han2m.portLogistics.admin.service;
 
-import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
-import com.Han2m.portLogistics.admin.dto.LoginResponseDto;
-import com.Han2m.portLogistics.admin.dto.UserRequestDto;
 import com.Han2m.portLogistics.admin.domain.Account;
+import com.Han2m.portLogistics.admin.dto.UserEditPasswordDto;
+import com.Han2m.portLogistics.admin.dto.UserRequestDto;
 import com.Han2m.portLogistics.admin.repository.AccountRepository;
-import com.Han2m.portLogistics.exception.EntityNotFoundException;
+import com.Han2m.portLogistics.exception.CustomException;
 import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,41 +25,44 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final WorkerRepository workerRepository;
 
+    @Transactional(readOnly = true)
+    public Boolean isAccountPresent(String accountId) {
+        return accountRepository.existsAccountByAccountId(accountId);
+    }
+
     // id, pw, role 받아서 관리자가 회원가입을 시키는 것.
-    public void addUser(Long workerId, UserRequestDto userRequestDto) {  // workerId 인자 추가
-        if (accountRepository.findByAccountId(userRequestDto.getAccountId()).isEmpty()) {
+    public void addUser(Long workerId, UserRequestDto userRequestDto) {
+
+        Worker worker = workerRepository.findById(workerId).orElseThrow(CustomException.EntityNotFoundException::new);
+
+        if(!isAccountPresent(userRequestDto.getAccountId())){
+
             Account account = Account.builder()
                     .accountId(userRequestDto.getAccountId())
                     .password(passwordEncoder.encode(userRequestDto.getPassword()))
                     .roles(userRequestDto.getRoles())
                     .build();
 
-            Worker worker = workerRepository.findById(workerId).orElseThrow(EntityNotFoundException::new);
             account.setWorker(worker);
-          //  worker.setAccount(account);
 
-            accountRepository.save(account);
-        } else {
-            throw new RuntimeException("해당 아이디는 이미 존재합니다.");
+            Account savedAccount = accountRepository.save(account);
+            worker.setAccount(savedAccount);
+        }
+        else {
+            throw new CustomException.DuplicateIdException();
         }
     }
 
 
-
     // 계정을 바꾸면, 재로그인을 필수적으로 시켜야함 !!
-    public LoginResponseDto editAccount(LoginRequestDto loginRequestDto) {
+    public void editAccount(UserEditPasswordDto userEditPasswordDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentAccountId = auth.getName();
 
-        // 아이디 중복 확인
-        accountRepository.findByAccountId(loginRequestDto.getAccountId()).orElseThrow(() -> new RuntimeException("해당 아이디는 이미 존재합니다."));
-
         // 현재 로그인된 정보 가져오기
-        Account account = accountRepository.findByAccountId(currentAccountId).orElseThrow(EntityNotFoundException::new);
+        Account account = accountRepository.findByAccountId(currentAccountId).orElseThrow(CustomException.EntityNotFoundException::new);
 
         // 현재 로그인된 멤버의 정보 변경
-        account.updateInfo(loginRequestDto.getAccountId(), passwordEncoder.encode(loginRequestDto.getPassword()));
-
-        return new LoginResponseDto(account.getAccountId(), account.getPassword());
+        account.editPassword(passwordEncoder.encode(userEditPasswordDto.getPassword()));
     }
 }

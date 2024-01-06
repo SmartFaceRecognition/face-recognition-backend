@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.config;
 
 import com.Han2m.portLogistics.admin.dto.TokenDto;
-import com.Han2m.portLogistics.exception.CustomExpiredJwtException;
+import com.Han2m.portLogistics.exception.ApplicationException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     // JWT 토큰 생성
     public TokenDto generateToken(Authentication authentication) {
 
-            // 권한 가져오기
+            // role 가져오기
             String authorities = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(","));
@@ -61,7 +61,7 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new ApplicationException(400,"권한 정보가 없는 토큰입니다.");
         }
 
         // 클레임에서 권한 정보 가져오기
@@ -76,22 +76,9 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-            throw new CustomExpiredJwtException("토큰이 만료되었습니다. 재로그인 해주십시오."); // 401 에러 뱉기 09.08.금
-        }
-        catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
-        }
-        return false;
+    public boolean validateToken(String token) throws ExpiredJwtException,UnsupportedJwtException{
+        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+        return true;
     }
 
     private Claims parseClaims(String accessToken) {

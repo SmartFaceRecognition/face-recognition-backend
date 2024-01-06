@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.user.service;
 
 
-import com.Han2m.portLogistics.exception.EntityNotFoundException;
+import com.Han2m.portLogistics.exception.CustomException;
 import com.Han2m.portLogistics.user.domain.Permission;
 import com.Han2m.portLogistics.user.domain.Wharf;
 import com.Han2m.portLogistics.user.domain.Worker;
@@ -26,11 +26,11 @@ public class WorkerService {
     private final WharfService wharfService;
     private final WorkerRepository workerRepository;
 
-    // Worker 조회
     @Transactional(readOnly = true)
     public Worker find(Long personId) {
-        return workerRepository.findById(personId).orElseThrow(EntityNotFoundException::new);
+        return workerRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
     }
+
 
     @Transactional(readOnly = true)
     public List<Worker> findAllWorkerAndWharf(String name,int sort,int dir) {
@@ -43,15 +43,10 @@ public class WorkerService {
         return workerRepository.findAllWorkerWithWharf(name,dynamicSort);
     }
 
-    public void deleteWorker(Long personId) {
-        workerRepository.delete(workerRepository.findById(personId).orElseThrow(EntityNotFoundException::new));
-    }
-
     public Worker registerWorker(ReqWorkerDto reqWorkerDto){
 
-        List<Wharf> wharfList = reqWorkerDto.getWharfs().stream().map(wharfService::find).toList();
+        List<Wharf> wharfList = wharfService.getWharfList(reqWorkerDto.getWharfs());
 
-        //Dto to entity
         Worker worker = reqWorkerDto.toEntity();
 
         permissionService.permit(worker,wharfList);
@@ -62,7 +57,7 @@ public class WorkerService {
     }
 
 
-    public Worker editWorker(Long personId,ReqWorkerDto reqWorkerDto){
+    public void editWorker(Long personId,ReqWorkerDto reqWorkerDto){
 
         Worker worker = find(personId);
 
@@ -70,31 +65,35 @@ public class WorkerService {
 
         worker.updateWorker(reqWorkerDto);
 
-        List<Wharf> wharfList = reqWorkerDto.getWharfs().stream().map(wharfService::find).toList();
+        List<Wharf> wharfList = wharfService.getWharfList(reqWorkerDto.getWharfs());
 
         List<Permission> permissionList = worker.getPermissionList();
 
         permissionService.permit(worker,wharfList);
 
         worker.setPermissionList(permissionList);
-
-       return worker;
     }
 
-    // Worker 삭제
+    public void editMe(String accountId ,ReqWorkerDto reqWorkerDto){
 
+        Worker worker = workerRepository.findByAccountId(accountId).orElseThrow(CustomException.EntityNotFoundException::new);
 
+        permissionService.deleteByPerson(worker);
 
-//    @Transactional(readOnly = true)
-//    public Page<ResWorkerDto> getAllWorkers(Pageable pageable) {
-//        Page<Worker> workers = workerRepository.findAll(pageable);
-//        return workers.map(ResWorkerDto::new);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public List<ResWorkerDto> searchWorkerByName(String name) {
-//        List<Worker> workers = workerRepository.findByName(name);
-//        return workers.stream().map(ResWorkerDto::new).collect(Collectors.toList());
-//    }
+        worker.updateWorker(reqWorkerDto);
+
+        List<Wharf> wharfList = wharfService.getWharfList(reqWorkerDto.getWharfs());
+
+        List<Permission> permissionList = worker.getPermissionList();
+
+        permissionService.permit(worker,wharfList);
+
+        worker.setPermissionList(permissionList);
+    }
+
+    public void deleteWorker(Long personId) {
+        workerRepository.delete(workerRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new));
+    }
+
 
 }
