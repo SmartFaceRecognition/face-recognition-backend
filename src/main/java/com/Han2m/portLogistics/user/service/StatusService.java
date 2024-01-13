@@ -1,7 +1,7 @@
 package com.Han2m.portLogistics.user.service;
 
 
-import com.Han2m.portLogistics.exception.CustomException;
+import com.Han2m.portLogistics.exception.CustomException.EntityNotFoundException;
 import com.Han2m.portLogistics.user.domain.Person;
 import com.Han2m.portLogistics.user.domain.Status;
 import com.Han2m.portLogistics.user.domain.Wharf;
@@ -21,14 +21,13 @@ import java.util.Optional;
 @Transactional
 public class StatusService {
 
-    private final WharfService wharfService;
     private final PersonRepository personRepository;
     private final StatusRepository statusRepository;
     private final WharfRepository wharfRepository;
 
     public void registerWorkerEnter(Long personId, Long wharfId){
-        Person person = personRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
-        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(CustomException.EntityNotFoundException::new);
+        Person person = personRepository.findById(personId).orElseThrow(() -> new EntityNotFoundException("해당 Person은 존재하지 않습니다."));
+        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(() -> new EntityNotFoundException("해당 Wharf는 존재하지 않습니다."));
 
         // 입장 시간 (현재 시간)
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
@@ -50,8 +49,9 @@ public class StatusService {
     }
 
     public void registerWorkerOut(Long personId, Long wharfId){
-        Person person = personRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
-        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(CustomException.EntityNotFoundException::new);
+        Person person = personRepository.findById(personId).orElseThrow(() -> new EntityNotFoundException("해당 Person은 존재하지 않습니다."));
+        Wharf wharf = wharfRepository.findById(wharfId).orElseThrow(() -> new EntityNotFoundException("해당 Wharf는 존재하지 않습니다."));
+
 
         Optional<Status> status = statusRepository.findByPersonAndWharf(person, wharf);
         if(status.isPresent()){

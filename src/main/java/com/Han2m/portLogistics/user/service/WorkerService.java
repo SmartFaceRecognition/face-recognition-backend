@@ -1,11 +1,12 @@
 package com.Han2m.portLogistics.user.service;
 
 
-import com.Han2m.portLogistics.exception.CustomException;
+import com.Han2m.portLogistics.exception.CustomException.EntityNotFoundException;
 import com.Han2m.portLogistics.user.domain.Permission;
 import com.Han2m.portLogistics.user.domain.Wharf;
 import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.dto.req.ReqWorkerDto;
+import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +24,12 @@ import java.util.List;
 public class WorkerService {
 
     private final PermissionService permissionService;
-    private final WharfService wharfService;
     private final WorkerRepository workerRepository;
+    private final WharfRepository wharfRepository;
 
     @Transactional(readOnly = true)
     public Worker find(Long personId) {
-        return workerRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new);
+        return workerRepository.findById(personId).orElseThrow(() -> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
     }
 
 
@@ -43,17 +44,19 @@ public class WorkerService {
         return workerRepository.findAllWorkerWithWharf(name,dynamicSort);
     }
 
-    public Worker registerWorker(ReqWorkerDto reqWorkerDto){
+    public void registerWorker(ReqWorkerDto reqWorkerDto){
 
-        List<Wharf> wharfList = wharfService.getWharfList(reqWorkerDto.getWharfs());
+        List<Wharf> wharfList = wharfRepository.findAllById(reqWorkerDto.getWharfs());
+        if(wharfList.isEmpty()){
+            throw new EntityNotFoundException("해당 Wharf는 존재하지 않습니다");
+        }
 
         Worker worker = reqWorkerDto.toEntity();
 
-        permissionService.permit(worker,wharfList);
-
         workerRepository.save(worker);
 
-        return worker;
+        permissionService.permit(worker,wharfList);
+
     }
 
 
@@ -65,7 +68,7 @@ public class WorkerService {
 
         worker.updateWorker(reqWorkerDto);
 
-        List<Wharf> wharfList = wharfService.getWharfList(reqWorkerDto.getWharfs());
+        List<Wharf> wharfList = wharfRepository.findAllById(reqWorkerDto.getWharfs());
 
         List<Permission> permissionList = worker.getPermissionList();
 
@@ -76,13 +79,13 @@ public class WorkerService {
 
     public void editMe(String accountId ,ReqWorkerDto reqWorkerDto){
 
-        Worker worker = workerRepository.findByAccountId(accountId).orElseThrow(CustomException.EntityNotFoundException::new);
+        Worker worker = workerRepository.findByAccountId(accountId).orElseThrow(() -> new EntityNotFoundException("해당 ID의 계정이 존재하지 않습니다."));
 
         permissionService.deleteByPerson(worker);
 
         worker.updateWorker(reqWorkerDto);
 
-        List<Wharf> wharfList = wharfService.getWharfList(reqWorkerDto.getWharfs());
+        List<Wharf> wharfList = wharfRepository.findAllById(reqWorkerDto.getWharfs());
 
         List<Permission> permissionList = worker.getPermissionList();
 
@@ -92,7 +95,7 @@ public class WorkerService {
     }
 
     public void deleteWorker(Long personId) {
-        workerRepository.delete(workerRepository.findById(personId).orElseThrow(CustomException.EntityNotFoundException::new));
+        workerRepository.delete(workerRepository.findById(personId).orElseThrow(() -> new EntityNotFoundException("해당 Worker는 존재하지 않습니다.")));
     }
 
 

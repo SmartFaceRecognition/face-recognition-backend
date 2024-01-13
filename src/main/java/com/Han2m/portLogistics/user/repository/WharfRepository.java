@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WharfRepository extends JpaRepository<Wharf, Long> {
-    // 부두 검색
-    Wharf findByName(String name);
 
 }
 

@@ -1,7 +1,8 @@
-package com.Han2m.portLogistics.config;
+package com.Han2m.portLogistics.utill;
 
 import com.Han2m.portLogistics.admin.dto.TokenDto;
 import com.Han2m.portLogistics.exception.ApplicationException;
+import com.Han2m.portLogistics.exception.CustomException.JwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -41,7 +42,8 @@ public class JwtTokenProvider {
 
             long now = (new Date()).getTime();
             // Access Token 생성
-            Date accessTokenExpiresIn = new Date(now + 30000); // 기존 : 86400000(하루), 토큰 만료 테스트를 위해 30초로 설정했음 09.08.금
+            // 토큰 유효기간 하루
+            Date accessTokenExpiresIn = new Date(now + 86400000);
             String accessToken = Jwts.builder()
                     .setSubject(authentication.getName())
                     .claim("auth", authorities)
@@ -76,9 +78,24 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String token) throws ExpiredJwtException,UnsupportedJwtException{
-        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-        return true;
+    public void validateToken(String token){
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+        }
+        catch (ExpiredJwtException e){
+            throw new JwtException("유효기간이 만료된 토큰입니다.");
+        }
+        catch (UnsupportedJwtException e){
+            throw new JwtException("지원되지 않는 JWT 토큰입니다.");
+        }
+        catch (IllegalArgumentException e){
+            throw new JwtException("JWT 토큰이 잘못 되었습니다.");
+        }
+        catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
+            throw new JwtException("잘못된 Jwt 서명입니다");
+        }
+
+
     }
 
     private Claims parseClaims(String accessToken) {
@@ -88,4 +105,6 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
+
 }

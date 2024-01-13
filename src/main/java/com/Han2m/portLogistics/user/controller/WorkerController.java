@@ -55,11 +55,11 @@ public class WorkerController {
 
     @Operation(summary = "직원 정보 등록하기")
     @PostMapping(value = "/worker")
-    public ApiResponse<ResWorkerDto> registerWorker(@RequestBody ReqWorkerDto reqWorkerDto){
+    public ApiResponse<?> registerWorker(@RequestBody ReqWorkerDto reqWorkerDto){
 
-        Worker worker = workerService.registerWorker(reqWorkerDto);
+       workerService.registerWorker(reqWorkerDto);
 
-        return successResponse(new ResWorkerDto(worker));
+        return successResponseNoContent();
     }
 
 

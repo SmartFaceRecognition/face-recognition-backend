@@ -2,7 +2,7 @@ package com.Han2m.portLogistics.admin.service;
 
 import com.Han2m.portLogistics.admin.dto.LoginRequestDto;
 import com.Han2m.portLogistics.admin.dto.TokenDto;
-import com.Han2m.portLogistics.config.JwtTokenProvider;
+import com.Han2m.portLogistics.utill.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

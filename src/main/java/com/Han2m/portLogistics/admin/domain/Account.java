@@ -2,9 +2,10 @@ package com.Han2m.portLogistics.admin.domain;
 
 import com.Han2m.portLogistics.user.domain.Worker;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Entity
@@ -20,10 +21,10 @@ public class Account {
     private String accountId;
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @OneToOne(mappedBy = "account", optional = false)
+    @OneToOne(mappedBy = "account", optional = false, fetch = FetchType.LAZY)
     private Worker worker;
 
     public void editPassword(String password) {

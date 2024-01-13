@@ -18,12 +18,13 @@ public class ApiResponse<T> {
     private int status;
     private String msg;
     private T result;
+
     private final LocalDateTime timestamp = LocalDateTime.now();
 
-    public ApiResponse(ErrorCode errorCode) {
+    public ApiResponse(ErrorApiResponse errorApiResponse) {
         this.success = false;
-        this.status = errorCode.getStatus();
-        this.msg = errorCode.getMessage();
+        this.status = errorApiResponse.getStatus();
+        this.msg = errorApiResponse.getMsg();
     }
 
     public ApiResponse(int status, String msg) {
@@ -40,8 +41,12 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true,SUCCESS_STATUS,SUCCESS_MESSAGE, null);
     }
 
-    public static ApiResponse<?> errorResponse(ErrorCode errorCode){
-        return new ApiResponse<>(errorCode);
+    public static ApiResponse<?> errorResponse(ErrorApiResponse errorApiResponse){
+        return new ApiResponse<>(errorApiResponse);
+    }
+
+    public static ApiResponse<?> errorResponse(ErrorType errorType){
+        return new ApiResponse<>(errorType.status,errorType.msg);
     }
 
     public static ApiResponse<?> errorResponse(int status,String msg){

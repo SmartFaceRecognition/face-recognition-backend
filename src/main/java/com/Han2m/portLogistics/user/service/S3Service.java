@@ -1,6 +1,6 @@
 package com.Han2m.portLogistics.user.service;
 
-import com.Han2m.portLogistics.exception.CustomException;
+import com.Han2m.portLogistics.exception.CustomException.EntityNotFoundException;
 import com.Han2m.portLogistics.user.domain.Worker;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import com.amazonaws.SdkClientException;
@@ -28,7 +28,7 @@ public class S3Service {
 
     public void uploadFaceImg(Long id,MultipartFile multipartFile) throws IOException {
 
-        Worker worker = workerRepository.findById(id).orElseThrow(CustomException.EntityNotFoundException::new);
+        Worker worker = workerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
 
         String fileName = multipartFile.getOriginalFilename();
 
