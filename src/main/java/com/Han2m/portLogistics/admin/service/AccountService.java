@@ -35,7 +35,7 @@ public class AccountService {
     // id, pw, role 받아서 관리자가 회원가입을 시키는 것.
     public void addUser(Long workerId, UserRequestDto userRequestDto) {
 
-        Worker worker = workerRepository.findById(workerId).orElseThrow(()-> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
+        Worker worker = workerRepository.findByIdWithWharf(workerId).orElseThrow(()-> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
 
         if(!isAccountPresent(userRequestDto.getAccountId())){
 

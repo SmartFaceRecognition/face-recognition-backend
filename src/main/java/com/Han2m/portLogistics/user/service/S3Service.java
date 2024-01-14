@@ -28,7 +28,7 @@ public class S3Service {
 
     public void uploadFaceImg(Long id,MultipartFile multipartFile) throws IOException {
 
-        Worker worker = workerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
+        Worker worker = workerRepository.findByIdWithWharf(id).orElseThrow(() -> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
 
         String fileName = multipartFile.getOriginalFilename();
 

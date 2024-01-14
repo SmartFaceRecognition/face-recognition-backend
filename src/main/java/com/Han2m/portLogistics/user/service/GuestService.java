@@ -9,6 +9,8 @@ import com.Han2m.portLogistics.user.repository.GuestRepository;
 import com.Han2m.portLogistics.user.repository.WharfRepository;
 import com.Han2m.portLogistics.user.repository.WorkerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,30 +32,30 @@ public class GuestService {
     }
 
 
-    public List<Guest> findAllGuestAndWharf(String name,int sort,int dir){
+    public List<Guest> findAllGuestAndWharf(String name,int sort,int dir,int page){
         Sort.Direction direction = (dir == 1) ? Sort.Direction.ASC : Sort.Direction.DESC;
 
         String sortField = (sort == 0) ? "name" : "position";
         Sort dynamicSort = Sort.by(direction, sortField);
 
-        return guestRepository.findAllGuestWithWharf(name,dynamicSort);
+        Pageable pageable = PageRequest.of(page,10,dynamicSort);
+
+        return guestRepository.findAllGuestWithWharf(name,pageable).getContent();
     }
 
-    public Guest registerGuest(ReqGuestDto reqGuestDto) {
+    public void registerGuest(ReqGuestDto reqGuestDto) {
 
         List<Wharf> wharfList = wharfRepository.findAllById(reqGuestDto.getWharfs());
 
         Guest guest = reqGuestDto.toEntity();
 
+        Guest savedGuest = guestRepository.save(guest);
+
         permissionService.permit(guest,wharfList);
-
         //담당자 등록
-        Worker worker = workerRepository.findById(reqGuestDto.getWorkerId()).orElseThrow(() -> new EntityNotFoundException("해당 Guest는 존재하지 않습니다."));
-        guest.setWorker(worker);
+        Worker worker = workerRepository.findById(reqGuestDto.getWorkerId()).orElseThrow(() -> new EntityNotFoundException("해당 Worker는 존재하지 않습니다."));
+        savedGuest.setWorker(worker);
 
-        guestRepository.save(guest);
-
-        return guest;
     }
 
 

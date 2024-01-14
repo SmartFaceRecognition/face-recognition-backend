@@ -38,20 +38,21 @@ public class GuestController {
     @GetMapping("/guests")
     public ApiResponse<List<ResGuestSimpleDto>> getWorkerList(@RequestParam(name = "search",defaultValue = "") String name,
                                                               @RequestParam(name = "sort", defaultValue = "0") int sort,
-                                                              @RequestParam(name = "dir", defaultValue = "1") int dir) {
+                                                              @RequestParam(name = "dir", defaultValue = "1") int dir,
+                                                              @RequestParam(name = "page", defaultValue = "0") int page) {
 
-        List<ResGuestSimpleDto> resGuestSimpleDtoList = guestService.findAllGuestAndWharf(name,sort,dir).stream().map(ResGuestSimpleDto::new).toList();
+        List<ResGuestSimpleDto> resGuestSimpleDtoList = guestService.findAllGuestAndWharf(name,sort,dir,page).stream().map(ResGuestSimpleDto::new).toList();
 
         return successResponse(resGuestSimpleDtoList);
     }
 
     @Operation(summary = "게스트 정보 등록하기")
     @PostMapping("/guest")
-    public ApiResponse<ResGuestDto> registerGuest(@RequestBody ReqGuestDto reqGuestDto) {
+    public ApiResponse<?> registerGuest(@RequestBody ReqGuestDto reqGuestDto) {
 
-        Guest guest = guestService.registerGuest(reqGuestDto);
+        guestService.registerGuest(reqGuestDto);
 
-        return successResponse(new ResGuestDto(guest));
+        return successResponseNoContent();
     }
 
     @Operation(summary = "게스트 정보 수정하기")

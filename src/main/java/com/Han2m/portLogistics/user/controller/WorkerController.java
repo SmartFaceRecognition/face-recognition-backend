@@ -45,10 +45,11 @@ public class WorkerController {
     @Operation(summary = "모든 직원 정보 조회")
     @GetMapping("/workers")
     public ApiResponse<List<ResWorkerSimpleDto>> getWorkerList(@RequestParam(name = "search",defaultValue = "") String name,
-                                                                @RequestParam(name = "sort", defaultValue = "0") int sort,
-                                                               @RequestParam(name = "dir", defaultValue = "1") int dir) {
+                                                               @RequestParam(name = "sort", defaultValue = "0") int sort,
+                                                               @RequestParam(name = "dir", defaultValue = "false") boolean dir,
+                                                               @RequestParam(defaultValue = "0") int page) {
 
-        List<ResWorkerSimpleDto> resWorkerSimpleDtoList = workerService.findAllWorkerAndWharf(name,sort,dir).stream().map(ResWorkerSimpleDto::new).toList();
+        List<ResWorkerSimpleDto> resWorkerSimpleDtoList = workerService.findAllWorkerAndWharf(name,sort,dir,page).stream().map(ResWorkerSimpleDto::new).toList();
 
         return successResponse(resWorkerSimpleDtoList);
     }
